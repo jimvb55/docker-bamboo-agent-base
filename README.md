@@ -80,3 +80,6 @@ For product support, go to [support.atlassian.com](https://support.atlassian.com
 
 * Added `tini` to act as the default PID 1 init process
 * Base image changed to `adoptopenjdk:8-jdk-hotspot-focal`
+
+### 8.0.0
+* Base image changed to `adoptopenjdk:11-jdk-hotspot-focal`
