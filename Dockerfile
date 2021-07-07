@@ -1,4 +1,4 @@
-FROM adoptopenjdk:8-jdk-hotspot-focal
+FROM adoptopenjdk:11-jdk-hotspot-focal
 LABEL maintainer="Atlassian Bamboo Team" \
       description="Official Bamboo Agent Docker Image"
 
@@ -29,7 +29,7 @@ RUN set -x && \
 WORKDIR ${BAMBOO_USER_HOME}
 USER ${BAMBOO_USER}
 
-ARG BAMBOO_VERSION
+ARG BAMBOO_VERSION=8.0.0
 ARG DOWNLOAD_URL=https://packages.atlassian.com/maven-closedsource-local/com/atlassian/bamboo/atlassian-bamboo-agent-installer/${BAMBOO_VERSION}/atlassian-bamboo-agent-installer-${BAMBOO_VERSION}.jar
 ENV AGENT_JAR=${BAMBOO_USER_HOME}/atlassian-bamboo-agent-installer.jar
 
