@@ -21,9 +21,6 @@ RUN set -x && \
           curl \
           tini \
      && \
-# create symlink for java home backward compatibility
-     mkdir -m 755 -p /usr/lib/jvm && \
-     ln -s "${JAVA_HOME}" /usr/lib/jvm/java-8-openjdk-amd64 && \
      rm -rf /var/lib/apt/lists/*
 
 WORKDIR ${BAMBOO_USER_HOME}
