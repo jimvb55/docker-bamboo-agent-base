@@ -58,7 +58,11 @@ Example of extending the agent base image by Maven and Git:
 
 # Upgrade
 
-Remote agents are updated automatically, so you don’t need to worry about it during Bamboo server upgrade. Agents automatically detect when a new version is available and downloads new classes from the server.
+Remote agents are updated automatically, so you don’t need to worry about it during Bamboo server upgrade. Agents automatically detect when a new version is available and downloads new classes from the server. 
+
+However, if you upgraded Bamboo version from 7.2 to 8.0 and then switched from JDK 8 to JDK 11 on your Bamboo Agent instance, you may need to download a new jar with an agent. Alternatively, you can go to `bamboo-agent-home/conf/wrapper.conf` and manually change the value of maximum java version supported by wrapper:
+
+    wrapper.java.version.max=11
 
 # Issue tracker
 
