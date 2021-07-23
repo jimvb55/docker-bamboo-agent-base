@@ -58,7 +58,7 @@ Example of extending the agent base image by Maven and Git:
 
 # Upgrade
 
-Remote agents are updated automatically, so you don’t need to worry about it during Bamboo server upgrade. Agents automatically detect when a new version is available and downloads new classes from the server. 
+Remote agents are updated automatically, so you don’t need to worry about it during Bamboo server upgrade. Agents automatically detect when a new version is available and downloads new classes from the server.
 
 # Issue tracker
 
@@ -83,7 +83,4 @@ For product support, go to [support.atlassian.com](https://support.atlassian.com
 
 ## 8.0.0
 * Base image changed to `adoptopenjdk:11-jdk-hotspot-focal`
-* If your agent home directory is persisted on a docker volume and you are going to upgrade Java version to JDK 11 on your Bamboo Agent instance, you may need to download a new jar with an agent. Alternatively, you can go to `bamboo-agent-home/conf/wrapper.conf` and manually change the value of the maximum java version supported by the wrapper:
-    
-
-    wrapper.java.version.max=11
+* If your agent home directory is persisted on a docker volume and you are going to upgrade Java version to JDK 11 on your Bamboo Agent instance, you may need to download a new jar with an agent. Alternatively, you can go to `bamboo-agent-home/conf/wrapper.conf` and manually change the value of the maximum java version supported by the wrapper to `wrapper.java.version.max=11`
