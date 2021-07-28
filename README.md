@@ -83,4 +83,4 @@ For product support, go to [support.atlassian.com](https://support.atlassian.com
 
 ## 8.0.0
 * Base image changed to `adoptopenjdk:11-jdk-hotspot-focal`
-* If your agent home directory is persisted on a docker volume and you are going to upgrade Java version to JDK 11 on your Bamboo Agent instance, you may need to download a new jar with an agent. Alternatively, you can go to `bamboo-agent-home/conf/wrapper.conf` and manually change the value of the maximum java version supported by the wrapper to `wrapper.java.version.max=11`
+* If your agent home directory is persisted on a docker volume you need to either reinstall the wrapper or go to `bamboo-agent-home/conf/wrapper.conf` and manually change the value of the maximum java version supported by the wrapper to `wrapper.java.version.max=11`
