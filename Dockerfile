@@ -4,7 +4,7 @@ FROM $BASE_IMAGE
 LABEL maintainer="dc-deployments@atlassian.com"
 LABEL securitytxt="https://www.atlassian.com/.well-known/security.txt"
 
-ENV APP_NAME                                bamboo
+ENV APP_NAME                                bamboo_agent
 ENV RUN_USER                                bamboo
 ENV RUN_GROUP                               bamboo
 ENV RUN_UID                                 2005
@@ -21,7 +21,7 @@ WORKDIR $BAMBOO_AGENT_HOME
 
 
 CMD ["/entrypoint.py"]
-ENTRYPOINT ["/sbin/tini", "--"]
+ENTRYPOINT ["/usr/bin/tini", "--"]
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends git git-lfs openssh-client python3 python3-jinja2 tini \
