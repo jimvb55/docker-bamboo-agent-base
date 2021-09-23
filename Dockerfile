@@ -10,15 +10,10 @@ ENV RUN_GROUP                               bamboo
 ENV RUN_UID                                 2005
 ENV RUN_GID                                 2005
 
-
 ENV BAMBOO_AGENT_HOME                       /var/atlassian/application-data/bamboo-agent
 ENV BAMBOO_AGENT_INSTALL_DIR                /opt/atlassian/bamboo
 
 WORKDIR $BAMBOO_AGENT_HOME
-
-
-
-
 
 CMD ["/entrypoint.py"]
 ENTRYPOINT ["/usr/bin/tini", "--"]
