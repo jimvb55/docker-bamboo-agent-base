@@ -21,7 +21,7 @@ def test_wrapper_conf(docker_cli, image, run_user):
 
     procs_list = get_procs(container)
     jvm = [proc for proc in procs_list if BOOTSTRAP_PROC in proc][0]
-    
+
     assert environment["BAMBOO_SERVER"] in jvm
     assert f'-Xms{environment["WRAPPER_JAVA_INITMEMORY"]}m' in jvm
     assert f'-Xmx{environment["WRAPPER_JAVA_MAXMEMORY"]}m' in jvm
