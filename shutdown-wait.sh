@@ -14,6 +14,6 @@
 #
 ##############################################################################
 
-# Bitbucket handles SIGTERM correctly, so use the supplied signal helper
+# The JVM handles SIGTERM correctly, so use the supplied signal helper
 echo "Shutdown: Sending TERM signal to the application and waiting..."
 /opt/atlassian/support/send-sig.sh TERM wait
