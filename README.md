@@ -73,6 +73,15 @@ Example of extending the agent base image by Maven and Git:
     RUN ${BAMBOO_USER_HOME}/bamboo-update-capability.sh "system.builder.mvn3.Maven 3.3" /usr/share/maven
     RUN ${BAMBOO_USER_HOME}/bamboo-update-capability.sh "system.git.executable" /usr/bin/git
 
+# Building your own image
+
+* Clone the Atlassian repository at https://bitbucket.org/atlassian-docker/docker-bamboo-agent-base/
+* Modify or replace the [Jinja](https://jinja.palletsprojects.com/) templates
+  under `config`; _NOTE_: The files must have the `.j2` extensions. However you
+  don't have to use template variables if you don't wish.
+* Build the new image with e.g: `docker build --tag my-agent-image --build-arg BAMBOO_VERSION=8.x.x .`
+* Optionally push to a registry, and deploy.
+
 # Issue tracker
 
 * You can view know issues [here](https://jira.atlassian.com/projects/BAM/issues/filter=allissues).
@@ -99,15 +108,6 @@ Docker Hub, however they should be considered deprecated, and do not receive
 updates or fixes.
 
 If for some reason you need a different version, see "Building your own image".
-
-# Building your own image
-
-* Clone the Atlassian repository at https://bitbucket.org/atlassian-docker/docker-bamboo-server/
-* Modify or replace the [Jinja](https://jinja.palletsprojects.com/) templates
-  under `config`; _NOTE_: The files must have the `.j2` extensions. However you
-  don't have to use template variables if you don't wish.
-* Build the new image with e.g: `docker build --tag my-bamboo-image --build-arg BAMBOO_VERSION=8.x.x .`
-* Optionally push to a registry, and deploy.
 
 # Support
 
