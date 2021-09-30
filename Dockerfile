@@ -19,7 +19,11 @@ CMD ["/entrypoint.py"]
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends git git-lfs openssh-client python3 python3-jinja2 tini \
+    && apt-get install -y --no-install-recommends \
+         git git-lfs \
+         openssh-client \
+         python3 python3-jinja2 python-is-python3 \
+         tini \
     && apt-get clean autoclean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
 ARG MAVEN_VERSION=3.6.3
@@ -41,9 +45,17 @@ RUN groupadd --gid ${RUN_GID} ${RUN_GROUP} \
     && mkdir -p                             ${BAMBOO_AGENT_HOME}/conf \
     && chown -R ${RUN_USER}:${RUN_GROUP}    ${BAMBOO_AGENT_HOME}
 
+COPY bamboo-update-capability.sh /
+RUN /bamboo-update-capability.sh "system.jdk.JDK 1.11" ${JAVA_HOME}/bin/java \
+    && /bamboo-update-capability.sh "JDK 11" ${JAVA_HOME}/bin/java \
+    && /bamboo-update-capability.sh "Python" /usr/bin/python3 \
+    && /bamboo-update-capability.sh "Python 3" /usr/bin/python3 \
+    && /bamboo-update-capability.sh "Git" /usr/bin/git
+
 VOLUME ["${BAMBOO_AGENT_HOME}"] # Must be declared after setting perms
 
-COPY entrypoint.py \
+COPY bamboo-update-capability.sh \
+     entrypoint.py \
      shared-components/image/entrypoint_helpers.py  /
 COPY shared-components/support                      /opt/atlassian/support
 COPY config/*                                       /opt/atlassian/etc/
