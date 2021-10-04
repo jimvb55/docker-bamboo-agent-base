@@ -1,41 +1,61 @@
-FROM adoptopenjdk:11-jdk-hotspot-focal
-LABEL maintainer="Atlassian Bamboo Team" \
-      description="Official Bamboo Agent Docker Image"
+ARG BASE_IMAGE=adoptopenjdk/openjdk11
+FROM $BASE_IMAGE
 
-ENV BAMBOO_USER=bamboo
-ENV BAMBOO_GROUP=bamboo
+LABEL maintainer="dc-deployments@atlassian.com"
+LABEL securitytxt="https://www.atlassian.com/.well-known/security.txt"
 
-ENV BAMBOO_USER_HOME=/home/${BAMBOO_USER}
-ENV BAMBOO_AGENT_HOME=${BAMBOO_USER_HOME}/bamboo-agent-home
+ENV APP_NAME                                bamboo_agent
+ENV RUN_USER                                bamboo
+ENV RUN_GROUP                               bamboo
+ENV RUN_UID                                 2005
+ENV RUN_GID                                 2005
 
-ENV INIT_BAMBOO_CAPABILITIES=${BAMBOO_USER_HOME}/init-bamboo-capabilities.properties
-ENV BAMBOO_CAPABILITIES=${BAMBOO_AGENT_HOME}/bin/bamboo-capabilities.properties
+ENV BAMBOO_AGENT_HOME                       /var/atlassian/application-data/bamboo-agent
+ENV BAMBOO_AGENT_INSTALL_DIR                /opt/atlassian/bamboo
 
-RUN set -x && \
-     addgroup ${BAMBOO_GROUP} && \
-     adduser ${BAMBOO_USER} --home ${BAMBOO_USER_HOME} --ingroup ${BAMBOO_GROUP} --disabled-password
+WORKDIR $BAMBOO_AGENT_HOME
 
-RUN set -x && \
-     apt-get update && \
-     apt-get install -y --no-install-recommends \
-          curl \
-          tini \
-     && \
-     rm -rf /var/lib/apt/lists/*
+CMD ["/entrypoint.py"]
+ENTRYPOINT ["/usr/bin/tini", "--"]
 
-WORKDIR ${BAMBOO_USER_HOME}
-USER ${BAMBOO_USER}
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+         git git-lfs \
+         openssh-client \
+         python3 python3-jinja2 python-is-python3 \
+         tini \
+    && apt-get clean autoclean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
-ARG BAMBOO_VERSION=8.0.0
+ARG MAVEN_VERSION=3.6.3
+ENV MAVEN_HOME                              /opt/maven
+RUN mkdir -p ${MAVEN_HOME} \
+    && curl -L --silent http://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz | tar -xz --strip-components=1 -C "${MAVEN_HOME}" \
+    && ln -s ${MAVEN_HOME}/bin/mvn /usr/local/bin/mvn
+
+ARG BAMBOO_VERSION
 ARG DOWNLOAD_URL=https://packages.atlassian.com/maven-closedsource-local/com/atlassian/bamboo/atlassian-bamboo-agent-installer/${BAMBOO_VERSION}/atlassian-bamboo-agent-installer-${BAMBOO_VERSION}.jar
-ENV AGENT_JAR=${BAMBOO_USER_HOME}/atlassian-bamboo-agent-installer.jar
 
-RUN set -x && \
-     curl -L --silent --output ${AGENT_JAR} ${DOWNLOAD_URL} && \
-     mkdir -p ${BAMBOO_USER_HOME}/bamboo-agent-home/bin
+RUN groupadd --gid ${RUN_GID} ${RUN_GROUP} \
+    && useradd --uid ${RUN_UID} --gid ${RUN_GID} --home-dir ${BAMBOO_AGENT_HOME} --shell /bin/bash ${RUN_USER} \
+    && echo PATH=$PATH > /etc/environment \
+    \
+    && mkdir -p                             ${BAMBOO_AGENT_INSTALL_DIR} \
+    && chown -R ${RUN_USER}:${RUN_GROUP}    ${BAMBOO_AGENT_INSTALL_DIR} \
+    && curl -L --silent                     ${DOWNLOAD_URL} -o "${BAMBOO_AGENT_INSTALL_DIR}/atlassian-bamboo-agent-installer.jar" \
+    && mkdir -p                             ${BAMBOO_AGENT_HOME}/conf \
+    && chown -R ${RUN_USER}:${RUN_GROUP}    ${BAMBOO_AGENT_HOME}
 
-COPY --chown=bamboo:bamboo bamboo-update-capability.sh bamboo-update-capability.sh
-RUN ${BAMBOO_USER_HOME}/bamboo-update-capability.sh "system.jdk.JDK 1.8" ${JAVA_HOME}/bin/java
+COPY bamboo-update-capability.sh /
+RUN /bamboo-update-capability.sh "system.jdk.JDK 1.11" ${JAVA_HOME}/bin/java \
+    && /bamboo-update-capability.sh "JDK 11" ${JAVA_HOME}/bin/java \
+    && /bamboo-update-capability.sh "Python" /usr/bin/python3 \
+    && /bamboo-update-capability.sh "Python 3" /usr/bin/python3 \
+    && /bamboo-update-capability.sh "Git" /usr/bin/git
 
-COPY --chown=bamboo:bamboo runAgent.sh runAgent.sh
-ENTRYPOINT ["./runAgent.sh"]
+VOLUME ["${BAMBOO_AGENT_HOME}"] # Must be declared after setting perms
+
+COPY bamboo-update-capability.sh \
+     entrypoint.py \
+     shared-components/image/entrypoint_helpers.py  /
+COPY shared-components/support                      /opt/atlassian/support
+COPY config/*                                       /opt/atlassian/etc/

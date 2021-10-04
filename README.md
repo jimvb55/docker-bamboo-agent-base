@@ -5,40 +5,57 @@ If you are looking for **Bamboo Server Docker Image** it can be found [here](htt
 
 # Overview
 
-This Docker image makes it easy to get an instance of Bamboo Agent up and running. This minimal image is suitable for customisation and contains only Bamboo Agent and OpenJDK 8.
+This Docker container makes it easy to get a Bamboo Remote Agent up and running. It is intended to be used as a base to build from, and as such
+contains limited built-in capabilities:
 
-Note that Bamboo Agent Docker Image does not include a Bamboo server.
+* JDK 11
+* Git & Git LFS
+* Maven 3
+* Python 3
+
+Using this image as a base, you can create a custom remote agent image with your
+desired build tools installed. Note that Bamboo Agent Docker Image does not
+include a Bamboo server.
 
 # Quick Start
 
-For the agent’s home directory which is used for storing agent’s configuration and builds data, we strongly recommend mounting a host directory as a data volume or a named volume:
+# Quick Start
 
-    docker volume create --name bambooAgentVolume
+For the `BAMBOO_HOME` directory that is used to store the repository data (amongst other things) we recommend mounting a host directory as a [data volume](https://docs.docker.com/engine/tutorials/dockervolumes/#/data-volumes), or via a named volume if using a docker version >= 1.9.
 
-Make sure your Bamboo server is running and has remote agents support enabled. To enable it:
+To get started you can use a data volume, or named volumes. In this example we'll use named volumes.
 
-1. Go to **Administration > Agents**.
-2. Start the Bamboo Agent container:
+    $> docker volume create --name bambooAgentVolume
+    $> docker run -e BAMBOO_SERVER=http://bamboo.mycompany.com/agentServer/ -v bambooVolume:/var/atlassian/application-data/bamboo --name="bambooAgent" --hostname="bambooAgent" -d atlassian/bamboo-agent-base
 
-        docker run -v bambooAgentVolume:/home/bamboo/bamboo-agent-home --name="bambooAgent" -d atlassian/bamboo-agent-base BAMBOO_SERVER_URL
+**Success**. The Bamboo remote agent is now available to be approved in your Bamboo administration.
 
-    where `BAMBOO_SERVER_URL` is the base URL of your Bamboo server.
 
-3. Verify if your remote agent has registered itself. Go back to the **Administration > Agents**.
+## Configuration
 
-## Security token
+* `BAMBOO_SERVER` (required)
 
-If you have security token verification enabled on your server, you can pass the token to the agent via the `SECURITY_TOKEN` environment variable in the docker run command.
+   The URL of the Bamboo Server the remote agent should connect to, e.g. `http://bamboo.mycompany.com/agentServer/`
 
-## JVM Configuration
+* `SECURITY_TOKEN` (default: NONE)
 
-You can pass additional JVM arguments by using the `VM_OPTS` environment variable.
+   If security token verification is enabled, this value specifies the token required to authenticate to the Bamboo server
 
-This way you can customize the Bamboo agent’s memory usage by overriding the wrapper’s default configuration. For example, to change the initial memory to 512MB and the maximum memory to 2048MB, add the following properties to your docker run command:
+* `WRAPPER_JAVA_INITMEMORY` (default: 256)
 
-`-e VM_OPTS="-Dwrapper.java.initmemory=512 -Dwrapper.java.maxmemory=2048"`
+   The minimum heap size of the JVM. This value is in MB and should be specified as an integer
 
-For the list of all configuration properties, see [Wrapper configuration properties](https://wrapper.tanukisoftware.com/doc/english/properties.html).
+* `WRAPPER_JAVA_MAXMEMORY` (default: 512)
+
+   The maximum heap size of the JVM. This value is in MB and should be specified as an integer
+
+* `IGNORE_SERVER_CERT_NAME` (default: false)
+
+   Ignore SSL verification for the Bamboo server, e.g. if Bamboo is using a self-signed certificate
+
+* `ALLOW_EMPTY_ARTIFACTS` (default: false)
+
+   Allow empty directories to be published as artifacts
 
 # Extending base image
 
@@ -56,31 +73,46 @@ Example of extending the agent base image by Maven and Git:
     RUN ${BAMBOO_USER_HOME}/bamboo-update-capability.sh "system.builder.mvn3.Maven 3.3" /usr/share/maven
     RUN ${BAMBOO_USER_HOME}/bamboo-update-capability.sh "system.git.executable" /usr/bin/git
 
-# Upgrade
+# Building your own image
 
-Remote agents are updated automatically, so you don’t need to worry about it during Bamboo server upgrade. Agents automatically detect when a new version is available and downloads new classes from the server.
+* Clone the Atlassian repository at https://bitbucket.org/atlassian-docker/docker-bamboo-agent-base/
+* Modify or replace the [Jinja](https://jinja.palletsprojects.com/) templates
+  under `config`; _NOTE_: The files must have the `.j2` extensions. However you
+  don't have to use template variables if you don't wish.
+* Build the new image with e.g: `docker build --tag my-agent-image --build-arg BAMBOO_VERSION=8.x.x .`
+* Optionally push to a registry, and deploy.
 
 # Issue tracker
 
 * You can view know issues [here](https://jira.atlassian.com/projects/BAM/issues/filter=allissues).
 * Please contact our support if you encounter any problems with this Dockerfile.
 
+# Supported JDK versions
+
+All the Atlassian Docker images are now JDK 11 only, and generated from the
+[official AdoptOpenJDK Docker images](https://hub.docker.com/r/adoptopenjdk/openjdk11).
+
+The Docker images follow the [Atlassian Support end-of-life
+policy](https://confluence.atlassian.com/support/atlassian-support-end-of-life-policy-201851003.html);
+images for unsupported versions of the products remain available but will no longer
+receive updates or fixes.
+
+However, Bamboo is an exception to this. Due to the need to support JDK 11 and
+Kubernetes, we currently only generate new images for Bamboo 8.0 and up. Legacy
+builds for JDK 8 are still available in Docker Hub, and building custom images
+is available (see above).
+
+Historically, we have also generated other versions of the images, including
+JDK 8, Alpine, and 'slim' versions of the JDK. These legacy images still exist in
+Docker Hub, however they should be considered deprecated, and do not receive
+updates or fixes.
+
+If for some reason you need a different version, see "Building your own image".
+
 # Support
 
 For product support, go to [support.atlassian.com](https://support.atlassian.com/)
 
-# Change log
-
-## 7.0
-
-* Base image changed to `adoptopenjdk:8-jdk-hotspot-bionic`
-* Improved image's layering
-
-## 7.1.4
-
-* Added `tini` to act as the default PID 1 init process
-* Base image changed to `adoptopenjdk:8-jdk-hotspot-focal`
-
-## 8.0.0
-* Base image changed to `adoptopenjdk:11-jdk-hotspot-focal`
-* If your agent home directory is saved on a docker volume, you need to either reinstall the wrapper or go to `bamboo-agent-home/conf/wrapper.conf` and manually change the value of the maximum java version supported by the wrapper to `wrapper.java.version.max=11`
+You can also visit the [Atlassian Data Center on
+Kubernetes](https://community.atlassian.com/t5/Atlassian-Data-Center-on/gh-p/DC_Kubernetes)
+forum for discussion on running Atlassian Data Center products in containers.
