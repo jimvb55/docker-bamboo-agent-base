@@ -16,10 +16,13 @@
 # https://wrapper.tanukisoftware.com/doc/english/prop-statusfile.html,
 # https://wrapper.tanukisoftware.com/doc/english/prop-java-statusfile.html
 # and `bamboo-agent.sh` for details.
+#
+# The logic here is wait for the wrapper and agent to be started, then
+# wait for the agent to be fully available. After this
+# `probe-readiness.sh` should be used to monitor ongoing availability.
 
-WRAPPER_STATUSFILE="/var/atlassian/application-data/bamboo-agent/bin/bamboo-agent.status"
-JAVA_STATUSFILE="/var/atlassian/application-data/bamboo-agent/bin/bamboo-agent.java.status"
+. /probe-common.sh
 
-# grep will return 0 if a match is found, no-zero otherwise.
 grep -q STARTED ${WRAPPER_STATUSFILE} \
-     && grep -q STARTED ${JAVA_STATUSFILE}
+     && grep -q STARTED ${JAVA_STATUSFILE} \
+     && grep -q "${LOG_TARGET}" ${AGENT_LOG}

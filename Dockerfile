@@ -56,6 +56,7 @@ VOLUME ["${BAMBOO_AGENT_HOME}"] # Must be declared after setting perms
 
 COPY bamboo-update-capability.sh \
      entrypoint.py \
+     probe-common.sh \
      probe-startup.sh \
      probe-readiness.sh \
      shared-components/image/entrypoint_helpers.py  /

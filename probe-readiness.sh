@@ -10,8 +10,12 @@
 #
 ##############################################################################
 
-AGENT_LOG="/var/atlassian/application-data/bamboo-agent/logs/atlassian-bamboo.log"
-LOG_TARGET="Bamboo agent '${HOSTNAME}' ready to receive builds."
+. /probe-common.sh
 
-# grep will return 0 if a match is found, non-zero otherwise.
-grep -q "${LOG_TARGET}" ${AGENT_LOG}
+# This is expected to be used in conjunction with the startup
+# probe. Unlike `probe-startup.sh` we don't check for the startup log
+# message, as this may disappear due to log rotation. However if the
+# Java process crashes it will be restarted by the wrapper; in that
+# case the Java status will change and the readiness will be paused.
+grep -q STARTED ${WRAPPER_STATUSFILE} \
+     && grep -q STARTED ${JAVA_STATUSFILE}
