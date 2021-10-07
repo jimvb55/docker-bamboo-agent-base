@@ -23,5 +23,6 @@
 # If the Java process crashes it will be restarted by the wrapper; in
 # that case the Java status will change and the readiness will be
 # paused.
+
 grep -q STARTED ${WRAPPER_STATUSFILE} \
      && grep -q STARTED ${JAVA_STATUSFILE}
