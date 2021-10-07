@@ -13,19 +13,9 @@
 
 . /probe-common.sh
 
-# The Bamboo uses a wrapper process to start the agent, and restart it
-# on failure. The wrapper generates status files for itself and the
-# underlying application, so we can use this for the basic status. See
-# https://wrapper.tanukisoftware.com/doc/english/prop-statusfile.html,
-# https://wrapper.tanukisoftware.com/doc/english/prop-java-statusfile.html
-# and `bamboo-agent.sh` for details.
-#
-# The logic here is wait for the wrapper and agent to be started, then
-# wait for the agent to be fully available.  The agent itself takes
-# 30-60s to start, so we also check for the appropriate message. After
-# this `readinessProbe`/`probe-readiness.sh` should be used to monitor
-# ongoing availability.
+# This is currently the same as `probe-readiness.sh`, as we have no
+# consistent way to ensure the agent is available (as opposed to just
+# the JVM running). See that script for details of the checks made.
 
 grep -q STARTED ${WRAPPER_STATUSFILE} \
-     && grep -q STARTED ${JAVA_STATUSFILE} \
-     && grep -q "${LOG_TARGET}" ${AGENT_LOG}
+     && grep -q STARTED ${JAVA_STATUSFILE}
