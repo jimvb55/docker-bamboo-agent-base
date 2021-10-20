@@ -17,5 +17,10 @@
 # consistent way to ensure the agent is available (as opposed to just
 # the JVM running). See that script for details of the checks made.
 
-grep -q STARTED ${WRAPPER_STATUSFILE} \
-     && grep -q STARTED ${JAVA_STATUSFILE}
+if [[ -n "$BAMBOO_AGENT_PERMISSIVE_READINESS" && "$BAMBOO_AGENT_PERMISSIVE_READINESS" != "false" ]]; then
+    grep -q STARTED ${WRAPPER_STATUSFILE} \
+         || grep -q STARTING ${WRAPPER_STATUSFILE}
+else
+    grep -q STARTED ${WRAPPER_STATUSFILE} \
+        && grep -q STARTED ${JAVA_STATUSFILE}
+fi
