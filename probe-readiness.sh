@@ -23,13 +23,12 @@
 # If the Java process crashes it will be restarted by the wrapper; in
 # that case the Java status will change and the readiness will be
 # paused. Additionally, if the environment variable
-# `BAMBOO_AGENT_PERMISSIVE_READINESS` is set and not 'false', the
-# readiness probe will be more permissive and not expect the agent to
-# be fully configured. This is primarily intended for use when
-# deploying agents into environments where the server may not yet be
-# configured.
+# `BAMBOO_AGENT_PERMISSIVE_READINESS` is set to 'true', the readiness
+# probe will be more permissive and not expect the agent to be fully
+# configured. This is primarily intended for use when deploying agents
+# into environments where the server may not yet be configured.
 
-if [[ -n "$BAMBOO_AGENT_PERMISSIVE_READINESS" && "$BAMBOO_AGENT_PERMISSIVE_READINESS" != "false" ]]; then
+if [[ "$BAMBOO_AGENT_PERMISSIVE_READINESS" == "true" ]]; then
     grep -q STARTED ${WRAPPER_STATUSFILE} \
          || grep -q STARTING ${WRAPPER_STATUSFILE}
 else

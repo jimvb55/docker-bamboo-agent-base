@@ -59,8 +59,8 @@ To get started you can use a data volume, or named volumes. In this example we'l
 
 * `BAMBOO_AGENT_PERMISSIVE_READINESS` (default: unset/false)
 
-   If set and not 'false', the readiness probe will be more permissive and not
-   expect the agent to be fully configured, only that the startup wrapper is
+   If set to 'true', the readiness probe will be more permissive and not expect
+   the agent to be fully configured, only that the startup wrapper is
    running. This is primarily intended for use when deploying agents into
    environments where the server may not yet be configured.
 
