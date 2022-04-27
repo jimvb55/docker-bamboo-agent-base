@@ -75,8 +75,8 @@ Example of extending the agent base image by Maven and Git:
         apt-get install git -y
         
     USER ${BAMBOO_USER}
-    RUN ${BAMBOO_USER_HOME}/bamboo-update-capability.sh "system.builder.mvn3.Maven 3.3" /usr/share/maven
-    RUN ${BAMBOO_USER_HOME}/bamboo-update-capability.sh "system.git.executable" /usr/bin/git
+    RUN /bamboo-update-capability.sh "system.builder.mvn3.Maven 3.3" /usr/share/maven
+    RUN /bamboo-update-capability.sh "system.git.executable" /usr/bin/git
 
 # Building your own image
 
