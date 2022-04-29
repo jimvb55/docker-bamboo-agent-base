@@ -19,8 +19,6 @@ include a Bamboo server.
 
 # Quick Start
 
-# Quick Start
-
 For the `BAMBOO_HOME` directory that is used to store the repository data (amongst other things) we recommend mounting a host directory as a [data volume](https://docs.docker.com/engine/tutorials/dockervolumes/#/data-volumes), or via a named volume if using a docker version >= 1.9.
 
 To get started you can use a data volume, or named volumes. In this example we'll use named volumes.
@@ -77,8 +75,8 @@ Example of extending the agent base image by Maven and Git:
         apt-get install git -y
         
     USER ${BAMBOO_USER}
-    RUN ${BAMBOO_USER_HOME}/bamboo-update-capability.sh "system.builder.mvn3.Maven 3.3" /usr/share/maven
-    RUN ${BAMBOO_USER_HOME}/bamboo-update-capability.sh "system.git.executable" /usr/bin/git
+    RUN /bamboo-update-capability.sh "system.builder.mvn3.Maven 3.3" /usr/share/maven
+    RUN /bamboo-update-capability.sh "system.git.executable" /usr/bin/git
 
 # Building your own image
 
