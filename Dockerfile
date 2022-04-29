@@ -42,7 +42,7 @@ RUN groupadd --gid ${RUN_GID} ${RUN_GROUP} \
     && mkdir -p                             ${BAMBOO_AGENT_INSTALL_DIR} \
     && chown -R ${RUN_USER}:${RUN_GROUP}    ${BAMBOO_AGENT_INSTALL_DIR} \
     && curl -L --silent                     ${DOWNLOAD_URL} -o "${BAMBOO_AGENT_INSTALL_DIR}/atlassian-bamboo-agent-installer.jar" \
-    && mkdir -p                             ${BAMBOO_AGENT_HOME}/conf \
+    && mkdir -p                             ${BAMBOO_AGENT_HOME}/conf ${BAMBOO_AGENT_HOME}/bin \
     && chown -R ${RUN_USER}:${RUN_GROUP}    ${BAMBOO_AGENT_HOME}
 
 COPY bamboo-update-capability.sh /
@@ -54,8 +54,7 @@ RUN /bamboo-update-capability.sh "system.jdk.JDK 1.11" ${JAVA_HOME}/bin/java \
 
 VOLUME ["${BAMBOO_AGENT_HOME}"] # Must be declared after setting perms
 
-COPY bamboo-update-capability.sh \
-     entrypoint.py \
+COPY entrypoint.py \
      probe-common.sh \
      probe-startup.sh \
      probe-readiness.sh \
