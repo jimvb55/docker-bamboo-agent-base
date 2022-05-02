@@ -68,7 +68,7 @@ This Docker image contains only minimal setup to run a Bamboo agent which might 
 
 Example of extending the agent base image by Maven and Git:
 
-    FROM atlassian/bamboo-agent-base
+    FROM atlassian/bamboo-agent-base:8.2.1
     USER root
     RUN apt-get update && \
         apt-get install maven -y && \
@@ -84,7 +84,7 @@ Example of extending the agent base image by Maven and Git:
 * Modify or replace the [Jinja](https://jinja.palletsprojects.com/) templates
   under `config`; _NOTE_: The files must have the `.j2` extensions. However you
   don't have to use template variables if you don't wish.
-* Build the new image with e.g: `docker build --tag my-agent-image --build-arg BAMBOO_VERSION=8.x.x .`
+* Build the new image with e.g: `docker build --tag my-agent-image .`
 * Optionally push to a registry, and deploy.
 
 # Issue tracker

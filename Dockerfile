@@ -35,6 +35,7 @@ RUN mkdir -p ${MAVEN_HOME} \
 ARG BAMBOO_VERSION
 ARG DOWNLOAD_URL=https://packages.atlassian.com/mvn/maven-atlassian-external/com/atlassian/bamboo/atlassian-bamboo-agent-installer/${BAMBOO_VERSION}/atlassian-bamboo-agent-installer-${BAMBOO_VERSION}.jar
 
+COPY bamboo-update-capability.sh /
 RUN groupadd --gid ${RUN_GID} ${RUN_GROUP} \
     && useradd --uid ${RUN_UID} --gid ${RUN_GID} --home-dir ${BAMBOO_AGENT_HOME} --shell /bin/bash ${RUN_USER} \
     && echo PATH=$PATH > /etc/environment \
@@ -43,14 +44,14 @@ RUN groupadd --gid ${RUN_GID} ${RUN_GROUP} \
     && chown -R ${RUN_USER}:${RUN_GROUP}    ${BAMBOO_AGENT_INSTALL_DIR} \
     && curl -L --silent                     ${DOWNLOAD_URL} -o "${BAMBOO_AGENT_INSTALL_DIR}/atlassian-bamboo-agent-installer.jar" \
     && mkdir -p                             ${BAMBOO_AGENT_HOME}/conf ${BAMBOO_AGENT_HOME}/bin \
-    && chown -R ${RUN_USER}:${RUN_GROUP}    ${BAMBOO_AGENT_HOME}
-
-COPY bamboo-update-capability.sh /
-RUN /bamboo-update-capability.sh "system.jdk.JDK 1.11" ${JAVA_HOME}/bin/java \
+    \
+    && /bamboo-update-capability.sh "system.jdk.JDK 1.11" ${JAVA_HOME}/bin/java \
     && /bamboo-update-capability.sh "JDK 11" ${JAVA_HOME}/bin/java \
     && /bamboo-update-capability.sh "Python" /usr/bin/python3 \
     && /bamboo-update-capability.sh "Python 3" /usr/bin/python3 \
-    && /bamboo-update-capability.sh "Git" /usr/bin/git
+    && /bamboo-update-capability.sh "Git" /usr/bin/git \
+    \
+    && chown -R ${RUN_USER}:${RUN_GROUP} ${BAMBOO_AGENT_HOME}
 
 VOLUME ["${BAMBOO_AGENT_HOME}"] # Must be declared after setting perms
 
