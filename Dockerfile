@@ -53,8 +53,6 @@ RUN groupadd --gid ${RUN_GID} ${RUN_GROUP} \
     \
     && chown -R ${RUN_USER}:${RUN_GROUP} ${BAMBOO_AGENT_HOME}
 
-VOLUME ["${BAMBOO_AGENT_HOME}"] # Must be declared after setting perms
-
 COPY entrypoint.py \
      probe-common.sh \
      probe-startup.sh \
