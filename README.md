@@ -49,7 +49,7 @@ To get started you can use a data volume, or named volumes. In this example we'l
 
 * `IGNORE_SERVER_CERT_NAME` (default: false)
 
-   Ignore SSL verification for the Bamboo server, e.g. if Bamboo is using a self-signed certificate
+   Ignore SSL certificate hostname if it's issued to a different host than the one under your Bamboo Base URL hostname
 
 * `ALLOW_EMPTY_ARTIFACTS` (default: false)
 
@@ -89,7 +89,7 @@ Example of extending the agent base image by Maven and Git:
 
 # Issue tracker
 
-* You can view know issuesÂ [here](https://jira.atlassian.com/projects/BAM/issues/filter=allissues).
+* You can view know issues [here](https://jira.atlassian.com/projects/BAM/issues/filter=allissues).
 * Please contact our support if you encounter any problems with this Dockerfile.
 
 # Supported JDK versions
