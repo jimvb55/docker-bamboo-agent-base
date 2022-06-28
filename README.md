@@ -17,9 +17,11 @@ Using this image as a base, you can create a custom remote agent image with your
 desired build tools installed. Note that Bamboo Agent Docker Image does not
 include a Bamboo server.
 
+** Use docker version >= 20.10.9. **
+
 # Quick Start
 
-For the `BAMBOO_HOME` directory that is used to store the repository data (amongst other things) we recommend mounting a host directory as a [data volume](https://docs.docker.com/engine/tutorials/dockervolumes/#/data-volumes), or via a named volume if using a docker version >= 1.9.
+For the `BAMBOO_HOME` directory that is used to store the repository data (amongst other things) we recommend mounting a host directory as a [data volume](https://docs.docker.com/engine/tutorials/dockervolumes/#/data-volumes), or via a named volume.
 
 To get started you can use a data volume, or named volumes. In this example we'll use named volumes.
 
