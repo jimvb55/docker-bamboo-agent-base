@@ -89,7 +89,7 @@ Example of extending the agent base image by Maven and Git:
 
 # Issue tracker
 
-* You can view know issues [here](https://jira.atlassian.com/projects/BAM/issues/filter=allissues).
+* You can view know issues [here](https://jira.atlassian.com/projects/BAM/issues/filter=allissues).
 * Please contact our support if you encounter any problems with this Dockerfile.
 
 # Supported JDK versions
