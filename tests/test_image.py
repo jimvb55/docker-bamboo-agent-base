@@ -16,6 +16,7 @@ def test_wrapper_conf(docker_cli, image, run_user):
         'WRAPPER_JAVA_MAXMEMORY': '576',
         'IGNORE_SERVER_CERT_NAME': 'true',
         'ALLOW_EMPTY_ARTIFACTS': 'true',
+        'SECURITY_TOKEN': '123'
     }
     container = run_image(docker_cli, image, user=run_user, environment=environment)
     _jvm = wait_for_proc(container, BOOTSTRAP_PROC)
@@ -24,6 +25,7 @@ def test_wrapper_conf(docker_cli, image, run_user):
     jvm = [proc for proc in procs_list if BOOTSTRAP_PROC in proc][0]
 
     assert environment["BAMBOO_SERVER"] in jvm
+    assert environment["SECURITY_TOKEN"] in jvm
     assert f'-Xms{environment["WRAPPER_JAVA_INITMEMORY"]}m' in jvm
     assert f'-Xmx{environment["WRAPPER_JAVA_MAXMEMORY"]}m' in jvm
     assert f'-Dbamboo.agent.ignoreServerCertName={environment["IGNORE_SERVER_CERT_NAME"]}' in jvm
