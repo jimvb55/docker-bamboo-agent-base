@@ -2,7 +2,6 @@
 
 import os
 import sys
-import xml.etree.ElementTree as ET
 
 from entrypoint_helpers import env, gen_cfg, logging, set_perms, str2bool, exec_app
 
@@ -33,9 +32,8 @@ if os.path.exists(DOCKER_SOCK):
 
 JAVA_OPTS = f'-Dbamboo.home={BAMBOO_AGENT_HOME}'
 
-AGENT_OPTS = f'{BAMBOO_SERVER}'
+AGENT_OPTS = [f'{BAMBOO_SERVER}']
 if env.get('security_token'):
-    AGENT_OPTS += f' -t {env["security_token"]}'
+    AGENT_OPTS.extend(['-t', f'{env["security_token"]}'])
 
-exec_app(['/opt/java/openjdk/bin/java', JAVA_OPTS, '-jar', f'{BAMBOO_AGENT_INSTALL_DIR}/atlassian-bamboo-agent-installer.jar', AGENT_OPTS],
-         BAMBOO_AGENT_HOME, name='Bamboo Agent', env_cleanup=True)
+exec_app(['/opt/java/openjdk/bin/java', JAVA_OPTS, '-jar', f'{BAMBOO_AGENT_INSTALL_DIR}/atlassian-bamboo-agent-installer.jar'] + AGENT_OPTS, BAMBOO_AGENT_HOME, name='Bamboo Agent', env_cleanup=True)
