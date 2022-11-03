@@ -19,6 +19,7 @@ CMD ["/entrypoint.py"]
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
 RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
          git git-lfs \
          openssh-client \
