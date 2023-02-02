@@ -25,8 +25,14 @@ For the `BAMBOO_HOME` directory that is used to store the repository data (among
 
 To get started you can use a data volume, or named volumes. In this example we'll use named volumes.
 
+Run as a standard Agent:
+
     $> docker volume create --name bambooAgentVolume
     $> docker run -e BAMBOO_SERVER=http://bamboo.mycompany.com/agentServer/ -v bambooVolume:/var/atlassian/application-data/bamboo --name="bambooAgent" --hostname="bambooAgent" -d atlassian/bamboo-agent-base
+
+Run as an Ephemeral Agent (requires Bamboo version >= 9.1.1):
+
+    $> docker run -e BAMBOO_SERVER=http://bamboo.mycompany.com/agentServer/ -e SECURITY_TOKEN={{YOUR_TOKEN}} -e AGENT_EPHEMERAL_FOR_KEY={{YOUR_RESULT_KEY}} -e KUBE_NUM_EXTRA_CONTAINERS={{NUMBER_OF_EXTRA_CONTAINERS}} --name="bambooAgent" --hostname="bambooAgent" -d atlassian/bamboo-agent-base
 
 **Success**. The Bamboo remote agent is now available to be approved in your Bamboo administration.
 
@@ -64,6 +70,16 @@ To get started you can use a data volume, or named volumes. In this example we'l
    running. This is primarily intended for use when deploying agents into
    environments where the server may not yet be configured.
 
+## K8s specific configuration
+
+* `AGENT_EPHEMERAL_FOR_KEY` (default: NONE)
+
+  If used, the image will be launched in the ephemeral agents' mode, the value itself specifies the purpose for spawning the agent. It needs to be a valid ResultKey
+
+* `KUBE_NUM_EXTRA_CONTAINERS` (default: 0) 
+
+  The number of extra containers that run in parallel with the Bamboo Agent. We make sure these extra containers are run before the Agent kick in
+
 # Extending base image
 
 This Docker image contains only minimal setup to run a Bamboo agent which might not be sufficient to run your builds. If you need additional capabilities you can extend the image to suit your needs.
@@ -86,7 +102,7 @@ Example of extending the agent base image by Maven and Git:
 * Modify or replace the [Jinja](https://jinja.palletsprojects.com/) templates
   under `config`; _NOTE_: The files must have the `.j2` extensions. However you
   don't have to use template variables if you don't wish.
-* Build the new image with e.g: `docker build --tag my-agent-image .`
+* Build the new image with e.g: `docker build --build-arg BAMBOO_VERSION=X.Y.Z --tag my-agent-image .`
 * Optionally push to a registry, and deploy.
 
 # Issue tracker
