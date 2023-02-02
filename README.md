@@ -70,7 +70,7 @@ Run as an Ephemeral Agent (requires Bamboo version >= 9.1.1):
    running. This is primarily intended for use when deploying agents into
    environments where the server may not yet be configured.
 
-## K8s specific configuration
+## Ephemeral agent specific configuration
 
 * `AGENT_EPHEMERAL_FOR_KEY` (default: NONE)
 
