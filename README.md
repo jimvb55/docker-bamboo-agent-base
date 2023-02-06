@@ -32,7 +32,7 @@ Run as a standard Agent:
 
 Run as an Ephemeral Agent (requires Bamboo version >= 9.1.1):
 
-    $> docker run -e BAMBOO_SERVER=http://bamboo.mycompany.com/agentServer/ -e SECURITY_TOKEN={{YOUR_TOKEN}} -e AGENT_EPHEMERAL_FOR_KEY={{YOUR_RESULT_KEY}} -e KUBE_NUM_EXTRA_CONTAINERS={{NUMBER_OF_EXTRA_CONTAINERS}} --name="bambooAgent" --hostname="bambooAgent" -d atlassian/bamboo-agent-base
+    $> docker run -e BAMBOO_SERVER=http://bamboo.mycompany.com/agentServer/ -e SECURITY_TOKEN={{YOUR_TOKEN}} -e AGENT_EPHEMERAL_FOR_KEY={{YOUR_RESULT_KEY}} -e AGENT_EPHEMERAL_TEMPLATE_ID={{YOUR_TEMPLATE_ID}} -e KUBE_NUM_EXTRA_CONTAINERS={{NUMBER_OF_EXTRA_CONTAINERS}} --name="bambooAgent" --hostname="bambooAgent" -d atlassian/bamboo-agent-base
 
 **Success**. The Bamboo remote agent is now available to be approved in your Bamboo administration.
 
@@ -74,11 +74,15 @@ Run as an Ephemeral Agent (requires Bamboo version >= 9.1.1):
 
 * `AGENT_EPHEMERAL_FOR_KEY` (default: NONE)
 
-  If used, the image will be launched in the ephemeral agents' mode, the value itself specifies the purpose for spawning the agent. It needs to be a valid ResultKey
+  If used together with `AGENT_EPHEMERAL_TEMPLATE_ID`, the image will be launched in the ephemeral agents' mode, the value itself specifies the purpose for spawning the agent. It needs to be a valid ResultKey.
+
+* `AGENT_EPHEMERAL_TEMPLATE_ID` (default: NONE)
+
+  If used together with `AGENT_EPHEMERAL_FOR_KEY`, the image will be launched in the ephemeral agents' mode, the value itself specifies the template ID the agent is launched within.
 
 * `KUBE_NUM_EXTRA_CONTAINERS` (default: 0) 
 
-  The number of extra containers that run in parallel with the Bamboo Agent. We make sure these extra containers are run before the Agent kick in
+  The number of extra containers that run in parallel with the Bamboo Agent. We make sure these extra containers are run before the Agent kick in.
 
 # Extending base image
 
