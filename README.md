@@ -84,6 +84,11 @@ Run as an Ephemeral Agent (requires Bamboo version >= 9.1.1):
 
   The number of extra containers that run in parallel with the Bamboo Agent. We make sure these extra containers are run before the Agent kick in.
 
+* `EXTRA_CONTAINERS_REGISTRATION_DIRECTORY` (default: /pbc/kube)
+
+  The directory where extra containers should register their readiness by creating any file. The image waits for having `KUBE_NUM_EXTRA_CONTAINERS` number of files inside this directory (if the one exists) before processing further and running the actual agent.
+
+
 # Extending base image
 
 This Docker image contains only minimal setup to run a Bamboo agent which might not be sufficient to run your builds. If you need additional capabilities you can extend the image to suit your needs.

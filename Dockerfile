@@ -13,6 +13,7 @@ ENV RUN_GID                                 2005
 ENV BAMBOO_AGENT_HOME                       /var/atlassian/application-data/bamboo-agent
 ENV BAMBOO_AGENT_INSTALL_DIR                /opt/atlassian/bamboo
 ENV KUBE_NUM_EXTRA_CONTAINERS               0
+ENV EXTRA_CONTAINERS_REGISTRATION_DIRECTORY /pbc/kube
 ENV DISABLE_AGENT_AUTO_CAPABILITY_DETECTION false
 
 WORKDIR $BAMBOO_AGENT_HOME
