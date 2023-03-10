@@ -32,7 +32,7 @@ Run as a standard Agent:
 
 Run as an Ephemeral Agent (requires Bamboo version >= 9.1.1):
 
-    $> docker run -e BAMBOO_SERVER=http://bamboo.mycompany.com/agentServer/ -e SECURITY_TOKEN={{YOUR_TOKEN}} -e AGENT_EPHEMERAL_FOR_KEY={{YOUR_RESULT_KEY}} -e AGENT_EPHEMERAL_TEMPLATE_ID={{YOUR_TEMPLATE_ID}} -e KUBE_NUM_EXTRA_CONTAINERS={{NUMBER_OF_EXTRA_CONTAINERS}} --name="bambooAgent" --hostname="bambooAgent" -d atlassian/bamboo-agent-base
+    $> docker run -e BAMBOO_SERVER=http://bamboo.mycompany.com/agentServer/ -e SECURITY_TOKEN={{YOUR_TOKEN}} -e AGENT_EPHEMERAL_FOR_KEY={{YOUR_RESULT_KEY}} -e AGENT_EPHEMERAL_TEMPLATE_ID={{YOUR_TEMPLATE_ID}} -e AGENT_EPHEMERAL_POD_NAME={{YOUR_POD_NAME}} -e KUBE_NUM_EXTRA_CONTAINERS={{NUMBER_OF_EXTRA_CONTAINERS}} --name="bambooAgent" --hostname="bambooAgent" -d atlassian/bamboo-agent-base
 
 **Success**. The Bamboo remote agent is now available to be approved in your Bamboo administration.
 
