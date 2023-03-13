@@ -16,6 +16,9 @@ def test_wrapper_conf(docker_cli, image, run_user):
         'WRAPPER_JAVA_MAXMEMORY': '576',
         'IGNORE_SERVER_CERT_NAME': 'true',
         'ALLOW_EMPTY_ARTIFACTS': 'true',
+        'AGENT_EPHEMERAL_FOR_KEY': 'PROJ-PLAN-JOB1-1',
+        'AGENT_EPHEMERAL_TEMPLATE_ID': '1234',
+        'AGENT_EPHEMERAL_POD_NAME': 'proj-plan-job1-1-iiehxzvo',
         'SECURITY_TOKEN': '123'
     }
     container = run_image(docker_cli, image, user=run_user, environment=environment)
@@ -30,6 +33,9 @@ def test_wrapper_conf(docker_cli, image, run_user):
     assert f'-Xmx{environment["WRAPPER_JAVA_MAXMEMORY"]}m' in jvm
     assert f'-Dbamboo.agent.ignoreServerCertName={environment["IGNORE_SERVER_CERT_NAME"]}' in jvm
     assert f'-Dbamboo.allow.empty.artifacts={environment["ALLOW_EMPTY_ARTIFACTS"]}' in jvm
+    assert f'-Dbamboo.agent.ephemeral.for.key={environment["AGENT_EPHEMERAL_FOR_KEY"]}' in jvm
+    assert f'-Dbamboo.agent.ephemeral.template.id={environment["AGENT_EPHEMERAL_TEMPLATE_ID"]}' in jvm
+    assert f'-Dbamboo.agent.ephemeral.pod.name={environment["AGENT_EPHEMERAL_POD_NAME"]}' in jvm
 
 def test_startup_probe(docker_cli, image, run_user):
     environment = {
