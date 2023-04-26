@@ -25,14 +25,10 @@ For the `BAMBOO_HOME` directory that is used to store the repository data (among
 
 To get started you can use a data volume, or named volumes. In this example we'll use named volumes.
 
-Run as a standard Agent:
+Run an Agent:
 
     $> docker volume create --name bambooAgentVolume
     $> docker run -e BAMBOO_SERVER=http://bamboo.mycompany.com/agentServer/ -v bambooVolume:/var/atlassian/application-data/bamboo --name="bambooAgent" --hostname="bambooAgent" -d atlassian/bamboo-agent-base
-
-Run as an Ephemeral Agent (requires Bamboo version >= 9.1.1):
-
-    $> docker run -e BAMBOO_SERVER=http://bamboo.mycompany.com/agentServer/ -e SECURITY_TOKEN={{YOUR_TOKEN}} -e AGENT_EPHEMERAL_FOR_KEY={{YOUR_RESULT_KEY}} -e AGENT_EPHEMERAL_TEMPLATE_ID={{YOUR_TEMPLATE_ID}} -e AGENT_EPHEMERAL_POD_NAME={{YOUR_POD_NAME}} -e KUBE_NUM_EXTRA_CONTAINERS={{NUMBER_OF_EXTRA_CONTAINERS}} --name="bambooAgent" --hostname="bambooAgent" -d atlassian/bamboo-agent-base
 
 **Success**. The Bamboo remote agent is now available to be approved in your Bamboo administration.
 
@@ -70,19 +66,11 @@ Run as an Ephemeral Agent (requires Bamboo version >= 9.1.1):
    running. This is primarily intended for use when deploying agents into
    environments where the server may not yet be configured.
 
-## Ephemeral agent specific configuration
+## Dedicated agent specific configuration
 
 * `AGENT_EPHEMERAL_FOR_KEY` (default: NONE)
 
-  If used together with `AGENT_EPHEMERAL_TEMPLATE_ID` and `AGENT_EPHEMERAL_POD_NAME`, the image will be launched in the ephemeral agents' mode, the value itself specifies the purpose for spawning the agent. It needs to be a valid ResultKey.
-
-* `AGENT_EPHEMERAL_TEMPLATE_ID` (default: NONE)
-
-  If used together with `AGENT_EPHEMERAL_FOR_KEY` and `AGENT_EPHEMERAL_POD_NAME`, the image will be launched in the ephemeral agents' mode, the value itself specifies the template ID the agent is launched within.
-
-* `AGENT_EPHEMERAL_POD_NAME` (default: NONE)
-
-  If used together with `AGENT_EPHEMERAL_FOR_KEY` and `AGENT_EPHEMERAL_TEMPLATE_ID`, the image will be launched in the ephemeral agents' mode, the value itself specifies the name of the pod the agent is launched within.
+  The value specifies the purpose for spawning the agent. It needs to be a valid ResultKey.
 
 * `KUBE_NUM_EXTRA_CONTAINERS` (default: 0) 
 
@@ -91,6 +79,12 @@ Run as an Ephemeral Agent (requires Bamboo version >= 9.1.1):
 * `EXTRA_CONTAINERS_REGISTRATION_DIRECTORY` (default: /pbc/kube)
 
   The directory where extra containers should register their readiness by creating any file. The image waits for having `KUBE_NUM_EXTRA_CONTAINERS` number of files inside this directory (if the one exists) before processing further and running the actual agent.
+
+## Ephemeral agent specific configuration
+
+* `BAMBOO_EPHEMERAL_AGENT_DATA` (default: NONE)
+
+  The Bamboo Ephemeral Agents specific configuration. It was designed to pass multiple key-value properties separated by the `#`. Example: `BAMBOO_SERVER=http://localhost#SECURITY_TOKEN=123456789#bamboo.agent.ephemeral.for.key=PROJ-PLAN-JOB1-1`
 
 
 # Extending base image

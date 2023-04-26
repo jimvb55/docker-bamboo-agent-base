@@ -28,11 +28,16 @@ wrapper.java.additional.1=-Dbamboo.home={{ bamboo_agent_home }}
 wrapper.java.additional.2=-Dbamboo.agent.ignoreServerCertName={{ ignore_server_cert_name | default('false') }}
 wrapper.java.additional.3=-Dbamboo.allow.empty.artifacts={{ allow_empty_artifacts | default('false') }}
 wrapper.java.additional.4=-DDISABLE_AGENT_AUTO_CAPABILITY_DETECTION={{ disable_agent_auto_capability_detection | default('false') }}
-wrapper.java.additional.5=-Dbamboo.agent.ephemeral.for.key={{ agent_ephemeral_for_key }}
-wrapper.java.additional.6=-Dbamboo.agent.ephemeral.template.id={{ agent_ephemeral_template_id }}
-wrapper.java.additional.7=-Dbamboo.agent.ephemeral.pod.name={{ agent_ephemeral_pod_name }}
-#wrapper.java.additional.8=-Dlog4j.configuration=
-#wrapper.java.additional.8=-agentlib:yjpagent
+
+{% if bamboo_ephemeral_agent_data is not defined %}
+    wrapper.java.additional.5=-Dbamboo.agent.ephemeral.for.key={{ agent_ephemeral_for_key }}
+{% else %}
+    {% for element in bamboo_ephemeral_agent_data.split('#') %}
+        {% set parts = element.split('=') %}
+        {% set temp_index = loop.index + 4 %}
+        wrapper.java.additional.{{ temp_index }}=-D{{ parts[0] }}={{ parts[1] }}
+    {% endfor %}
+{% endif %}
 
 # Application parameters.  Add parameters as needed starting from 1
 wrapper.app.parameter.1=com.atlassian.bamboo.agent.bootstrap.AgentBootstrap
