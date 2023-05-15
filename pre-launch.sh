@@ -8,7 +8,7 @@ then
   for SUBDIR in classpath plugins framework-bundles
   do
     cp -R "$BAMBOO_AGENT_CLASSPATH_DIR/$SUBDIR" "$BAMBOO_AGENT_HOME/$SUBDIR"
-    chown -R bamboo "$BAMBOO_AGENT_HOME/$SUBDIR"
+    chown -R $RUN_USER "$BAMBOO_AGENT_HOME/$SUBDIR"
     chmod -R u+w "$BAMBOO_AGENT_HOME/$SUBDIR"
   done
 fi

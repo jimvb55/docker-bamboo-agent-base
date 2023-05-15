@@ -66,6 +66,11 @@ Run an Agent:
    running. This is primarily intended for use when deploying agents into
    environments where the server may not yet be configured.
 
+* `BAMBOO_AGENT_CLASSPATH_DIR` (default: NONE)
+
+   If set, agent startup process will copy agent classpath from designated location instead of downloading it from the server.
+   This can speed up the process and reduce the load on the Bamboo server.
+
 ## Dedicated agent specific configuration
 
 * `AGENT_EPHEMERAL_FOR_KEY` (default: NONE)
