@@ -26,7 +26,7 @@ pipelines:
 
       - parallel:
           - step:
-              name: Bamboo Agent JDK 11 - Batch 1
+              name: Bamboo Agent JDK 17 - Batch 1
               services:
                 - docker
               script:
@@ -38,17 +38,17 @@ pipelines:
                     --start-version='8' \
                     --default-release \
                     --dockerfile='Dockerfile' \
-                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
                     --mac-product-key='bamboo' \
-                    --tag-suffixes='jdk11,ubuntu' \
+                    --tag-suffixes='jdk17,ubuntu' \
                     --job-offset='0' \
                     --jobs-total='8' \
                     --docker-repos='atlassian/bamboo-agent-base' \
                     --push
 
           - step:
-              name: Bamboo Agent JDK 11 - Batch 2
+              name: Bamboo Agent JDK 17 - Batch 2
               services:
                 - docker
               script:
@@ -60,17 +60,17 @@ pipelines:
                     --start-version='8' \
                     --default-release \
                     --dockerfile='Dockerfile' \
-                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
                     --mac-product-key='bamboo' \
-                    --tag-suffixes='jdk11,ubuntu' \
+                    --tag-suffixes='jdk17,ubuntu' \
                     --job-offset='1' \
                     --jobs-total='8' \
                     --docker-repos='atlassian/bamboo-agent-base' \
                     --push
 
           - step:
-              name: Bamboo Agent JDK 11 - Batch 3
+              name: Bamboo Agent JDK 17 - Batch 3
               services:
                 - docker
               script:
@@ -82,17 +82,17 @@ pipelines:
                     --start-version='8' \
                     --default-release \
                     --dockerfile='Dockerfile' \
-                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
                     --mac-product-key='bamboo' \
-                    --tag-suffixes='jdk11,ubuntu' \
+                    --tag-suffixes='jdk17,ubuntu' \
                     --job-offset='2' \
                     --jobs-total='8' \
                     --docker-repos='atlassian/bamboo-agent-base' \
                     --push
 
           - step:
-              name: Bamboo Agent JDK 11 - Batch 4
+              name: Bamboo Agent JDK 17 - Batch 4
               services:
                 - docker
               script:
@@ -104,17 +104,17 @@ pipelines:
                     --start-version='8' \
                     --default-release \
                     --dockerfile='Dockerfile' \
-                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
                     --mac-product-key='bamboo' \
-                    --tag-suffixes='jdk11,ubuntu' \
+                    --tag-suffixes='jdk17,ubuntu' \
                     --job-offset='3' \
                     --jobs-total='8' \
                     --docker-repos='atlassian/bamboo-agent-base' \
                     --push
 
           - step:
-              name: Bamboo Agent JDK 11 - Batch 5
+              name: Bamboo Agent JDK 17 - Batch 5
               services:
                 - docker
               script:
@@ -126,17 +126,17 @@ pipelines:
                     --start-version='8' \
                     --default-release \
                     --dockerfile='Dockerfile' \
-                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
                     --mac-product-key='bamboo' \
-                    --tag-suffixes='jdk11,ubuntu' \
+                    --tag-suffixes='jdk17,ubuntu' \
                     --job-offset='4' \
                     --jobs-total='8' \
                     --docker-repos='atlassian/bamboo-agent-base' \
                     --push
 
           - step:
-              name: Bamboo Agent JDK 11 - Batch 6
+              name: Bamboo Agent JDK 17 - Batch 6
               services:
                 - docker
               script:
@@ -148,17 +148,17 @@ pipelines:
                     --start-version='8' \
                     --default-release \
                     --dockerfile='Dockerfile' \
-                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
                     --mac-product-key='bamboo' \
-                    --tag-suffixes='jdk11,ubuntu' \
+                    --tag-suffixes='jdk17,ubuntu' \
                     --job-offset='5' \
                     --jobs-total='8' \
                     --docker-repos='atlassian/bamboo-agent-base' \
                     --push
 
           - step:
-              name: Bamboo Agent JDK 11 - Batch 7
+              name: Bamboo Agent JDK 17 - Batch 7
               services:
                 - docker
               script:
@@ -170,17 +170,17 @@ pipelines:
                     --start-version='8' \
                     --default-release \
                     --dockerfile='Dockerfile' \
-                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
                     --mac-product-key='bamboo' \
-                    --tag-suffixes='jdk11,ubuntu' \
+                    --tag-suffixes='jdk17,ubuntu' \
                     --job-offset='6' \
                     --jobs-total='8' \
                     --docker-repos='atlassian/bamboo-agent-base' \
                     --push
 
           - step:
-              name: Bamboo Agent JDK 11 - Batch 8
+              name: Bamboo Agent JDK 17 - Batch 8
               services:
                 - docker
               script:
@@ -192,10 +192,10 @@ pipelines:
                     --start-version='8' \
                     --default-release \
                     --dockerfile='Dockerfile' \
-                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
                     --mac-product-key='bamboo' \
-                    --tag-suffixes='jdk11,ubuntu' \
+                    --tag-suffixes='jdk17,ubuntu' \
                     --job-offset='7' \
                     --jobs-total='8' \
                     --docker-repos='atlassian/bamboo-agent-base' \
@@ -389,7 +389,7 @@ pipelines:
     ######################################################################
     # Custom: Do full release for each image flavour
     ######################################################################
-    jdk11-custom-release:
+    jdk17-custom-release:
       - variables:
           - name: BAMBOO_VERSION
           - name: DOCKER_TAG
@@ -401,7 +401,7 @@ pipelines:
             - echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin
             - >
               docker build -t ${DOCKER_REGISTRY}/atlassian/bamboo:${DOCKER_TAG}
-                --build-arg BASE_IMAGE=eclipse-temurin:11
+                --build-arg BASE_IMAGE=eclipse-temurin:17
                 --build-arg BAMBOO_VERSION=${BAMBOO_VERSION} .
             - docker push ${DOCKER_REGISTRY}/atlassian/bamboo-agent-base:${DOCKER_TAG}
 
@@ -417,7 +417,7 @@ pipelines:
 
       - parallel:
           - step:
-              name: Bamboo Agent JDK 11 - Batch 1
+              name: Bamboo Agent JDK 17 - Batch 1
               services:
                 - docker
               script:
@@ -428,17 +428,17 @@ pipelines:
                     --update \
                     --start-version='8' \
                     --default-release \
-                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
                     --mac-product-key='bamboo' \
-                    --tag-suffixes='jdk11,ubuntu' \
+                    --tag-suffixes='jdk17,ubuntu' \
                     --job-offset='0' \
                     --jobs-total='8' \
                     --docker-repos='atlassian/bamboo-agent-base' \
                     --push
 
           - step:
-              name: Bamboo Agent JDK 11 - Batch 2
+              name: Bamboo Agent JDK 17 - Batch 2
               services:
                 - docker
               script:
@@ -449,17 +449,17 @@ pipelines:
                     --update \
                     --start-version='8' \
                     --default-release \
-                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
                     --mac-product-key='bamboo' \
-                    --tag-suffixes='jdk11,ubuntu' \
+                    --tag-suffixes='jdk17,ubuntu' \
                     --job-offset='1' \
                     --jobs-total='8' \
                     --docker-repos='atlassian/bamboo-agent-base' \
                     --push
 
           - step:
-              name: Bamboo Agent JDK 11 - Batch 3
+              name: Bamboo Agent JDK 17 - Batch 3
               services:
                 - docker
               script:
@@ -470,17 +470,17 @@ pipelines:
                     --update \
                     --start-version='8' \
                     --default-release \
-                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
                     --mac-product-key='bamboo' \
-                    --tag-suffixes='jdk11,ubuntu' \
+                    --tag-suffixes='jdk17,ubuntu' \
                     --job-offset='2' \
                     --jobs-total='8' \
                     --docker-repos='atlassian/bamboo-agent-base' \
                     --push
 
           - step:
-              name: Bamboo Agent JDK 11 - Batch 4
+              name: Bamboo Agent JDK 17 - Batch 4
               services:
                 - docker
               script:
@@ -491,17 +491,17 @@ pipelines:
                     --update \
                     --start-version='8' \
                     --default-release \
-                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
                     --mac-product-key='bamboo' \
-                    --tag-suffixes='jdk11,ubuntu' \
+                    --tag-suffixes='jdk17,ubuntu' \
                     --job-offset='3' \
                     --jobs-total='8' \
                     --docker-repos='atlassian/bamboo-agent-base' \
                     --push
 
           - step:
-              name: Bamboo Agent JDK 11 - Batch 5
+              name: Bamboo Agent JDK 17 - Batch 5
               services:
                 - docker
               script:
@@ -512,17 +512,17 @@ pipelines:
                     --update \
                     --start-version='8' \
                     --default-release \
-                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
                     --mac-product-key='bamboo' \
-                    --tag-suffixes='jdk11,ubuntu' \
+                    --tag-suffixes='jdk17,ubuntu' \
                     --job-offset='4' \
                     --jobs-total='8' \
                     --docker-repos='atlassian/bamboo-agent-base' \
                     --push
 
           - step:
-              name: Bamboo Agent JDK 11 - Batch 6
+              name: Bamboo Agent JDK 17 - Batch 6
               services:
                 - docker
               script:
@@ -533,17 +533,17 @@ pipelines:
                     --update \
                     --start-version='8' \
                     --default-release \
-                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
                     --mac-product-key='bamboo' \
-                    --tag-suffixes='jdk11,ubuntu' \
+                    --tag-suffixes='jdk17,ubuntu' \
                     --job-offset='5' \
                     --jobs-total='8' \
                     --docker-repos='atlassian/bamboo-agent-base' \
                     --push
 
           - step:
-              name: Bamboo Agent JDK 11 - Batch 7
+              name: Bamboo Agent JDK 17 - Batch 7
               services:
                 - docker
               script:
@@ -554,17 +554,17 @@ pipelines:
                     --update \
                     --start-version='8' \
                     --default-release \
-                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
                     --mac-product-key='bamboo' \
-                    --tag-suffixes='jdk11,ubuntu' \
+                    --tag-suffixes='jdk17,ubuntu' \
                     --job-offset='6' \
                     --jobs-total='8' \
                     --docker-repos='atlassian/bamboo-agent-base' \
                     --push
 
           - step:
-              name: Bamboo Agent JDK 11 - Batch 8
+              name: Bamboo Agent JDK 17 - Batch 8
               services:
                 - docker
               script:
@@ -575,10 +575,10 @@ pipelines:
                     --update \
                     --start-version='8' \
                     --default-release \
-                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
                     --mac-product-key='bamboo' \
-                    --tag-suffixes='jdk11,ubuntu' \
+                    --tag-suffixes='jdk17,ubuntu' \
                     --job-offset='7' \
                     --jobs-total='8' \
                     --docker-repos='atlassian/bamboo-agent-base' \
