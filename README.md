@@ -126,7 +126,7 @@ Example of extending the agent base image by Maven and Git:
 
 Bamboo agent images are based on JDK 11, and generated from the
 [official Eclipse Temurin OpenJDK Docker images](https://hub.docker.com/_/eclipse-temurin).
-Starting from Bamboo 9.4 imaged are built on top of JDK 17.
+Starting from Bamboo 9.4 images are built on top of JDK 17.
 
 The Docker images follow the [Atlassian Support end-of-life
 policy](https://confluence.atlassian.com/support/atlassian-support-end-of-life-policy-201851003.html);
