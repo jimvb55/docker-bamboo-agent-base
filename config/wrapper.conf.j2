@@ -29,13 +29,14 @@ wrapper.java.additional.2=-Dbamboo.agent.ignoreServerCertName={{ ignore_server_c
 wrapper.java.additional.3=-Dbamboo.allow.empty.artifacts={{ allow_empty_artifacts | default('false') }}
 wrapper.java.additional.4=-DDISABLE_AGENT_AUTO_CAPABILITY_DETECTION={{ disable_agent_auto_capability_detection | default('false') }}
 wrapper.java.additional.5=--add-opens=java.base/java.util=ALL-UNNAMED
+wrapper.java.additional.6=--add-opens=java.base/java.lang=ALL-UNNAMED
 
 {% if bamboo_ephemeral_agent_data is not defined %}
-    wrapper.java.additional.6=-Dbamboo.agent.ephemeral.for.key={{ agent_ephemeral_for_key }}
+    wrapper.java.additional.7=-Dbamboo.agent.ephemeral.for.key={{ agent_ephemeral_for_key }}
 {% else %}
     {% for element in bamboo_ephemeral_agent_data.split('#') %}
         {% set parts = element.split('=') %}
-        {% set temp_index = loop.index + 5 %}
+        {% set temp_index = loop.index + 6 %}
         wrapper.java.additional.{{ temp_index }}=-D{{ parts[0] }}={{ parts[1] }}
     {% endfor %}
 {% endif %}
