@@ -8,7 +8,7 @@ If you are looking for **Bamboo Server Docker Image** it can be found [here](htt
 This Docker container makes it easy to get a Bamboo Remote Agent up and running. It is intended to be used as a base to build from, and as such
 contains limited built-in capabilities:
 
-* JDK 11
+* JDK 11 (JDK 17 starting from v9.4.0)
 * Git & Git LFS
 * Maven 3
 * Python 3
@@ -124,8 +124,9 @@ Example of extending the agent base image by Maven and Git:
 
 # Supported JDK versions
 
-All the Atlassian Docker images are now JDK 11 only, and generated from the
+Bamboo agent images are based on JDK 11, and generated from the
 [official Eclipse Temurin OpenJDK Docker images](https://hub.docker.com/_/eclipse-temurin).
+Starting from Bamboo 9.4 images are built on top of JDK 17.
 
 The Docker images follow the [Atlassian Support end-of-life
 policy](https://confluence.atlassian.com/support/atlassian-support-end-of-life-policy-201851003.html);
