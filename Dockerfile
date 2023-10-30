@@ -18,8 +18,14 @@ ENV DISABLE_AGENT_AUTO_CAPABILITY_DETECTION false
 
 WORKDIR $BAMBOO_AGENT_HOME
 
-CMD ["/usr/bin/tini", "--", "/entrypoint.py"]
-ENTRYPOINT ["/pre-launch.sh"]
+COPY entrypoint.py \
+     probe-common.sh \
+     probe-startup.sh \
+     probe-readiness.sh \
+     pre-launch.sh \
+     shared-components/image/entrypoint_helpers.py  /
+COPY shared-components/support                      /opt/atlassian/support
+COPY config/*                                       /opt/atlassian/etc/
 
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -56,13 +62,10 @@ RUN groupadd --gid ${RUN_GID} ${RUN_GROUP} \
     && /bamboo-update-capability.sh "Python 3" /usr/bin/python3 \
     && /bamboo-update-capability.sh "Git" /usr/bin/git \
     \
-    && chown -R ${RUN_USER}:${RUN_GROUP} ${BAMBOO_AGENT_HOME}
+    && chown -R ${RUN_USER}:${RUN_GROUP} ${BAMBOO_AGENT_HOME} \
+    && for file in "/opt/atlassian/support /entrypoint.py /entrypoint_helpers.py /probe-common.sh /probe-startup.sh /probe-readiness.sh /pre-launch.sh /bamboo-update-capability.sh"; do \
+       chmod -R "u=rwX,g=rX,o=rX" ${file} && \
+       chown -R root. ${file}; done
 
-COPY entrypoint.py \
-     probe-common.sh \
-     probe-startup.sh \
-     probe-readiness.sh \
-     pre-launch.sh \
-     shared-components/image/entrypoint_helpers.py  /
-COPY shared-components/support                      /opt/atlassian/support
-COPY config/*                                       /opt/atlassian/etc/
+CMD ["/usr/bin/tini", "--", "/entrypoint.py"]
+ENTRYPOINT ["/pre-launch.sh"]
