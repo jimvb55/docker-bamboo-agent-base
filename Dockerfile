@@ -65,7 +65,7 @@ RUN groupadd --gid ${RUN_GID} ${RUN_GROUP} \
     && chown -R ${RUN_USER}:${RUN_GROUP} ${BAMBOO_AGENT_HOME} \
     && for file in "/opt/atlassian/support /entrypoint.py /entrypoint_helpers.py /probe-common.sh /probe-startup.sh /probe-readiness.sh /pre-launch.sh /bamboo-update-capability.sh"; do \
        chmod -R "u=rwX,g=rX,o=rX" ${file} && \
-       chown -R root. ${file}; done
+       chown -R root ${file}; done
 
 CMD ["/usr/bin/tini", "--", "/entrypoint.py"]
 ENTRYPOINT ["/pre-launch.sh"]
