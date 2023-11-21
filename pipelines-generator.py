@@ -24,16 +24,6 @@ images = {
             'tag_suffixes': ['jdk11', 'ubuntu'],
             'dockerfile': 'Dockerfile',
             'docker_repos': ['atlassian/bamboo-agent-base'],
-        },
-        8: {
-            'mac_key': 'bamboo',
-            'start_version': '7.1',
-            'end_version': '8',
-            'default_release': True,
-            'base_image': 'eclipse-temurin:8',
-            'tag_suffixes': ['jdk8', 'ubuntu'],
-            'dockerfile': 'Dockerfile',
-            'docker_repos': ['atlassian/bamboo-agent-base'],
         }
     }
 }

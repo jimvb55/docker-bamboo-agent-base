@@ -88,3 +88,14 @@ def test_readiness_probe(docker_cli, image, run_user):
         time.sleep(0.1)
 
     assert False
+
+def test_jdk_capabilities(docker_cli, image, run_user):
+    environment = {
+        'BAMBOO_SERVER': 'http://localhost'
+    }
+
+    container = run_image(docker_cli, image, user=run_user, environment=environment)
+    _jvm = wait_for_proc(container, BOOTSTRAP_PROC)
+    capabilities_file = container.file('/var/atlassian/application-data/bamboo-agent/bin/bamboo-capabilities.properties').content.decode('utf-8')
+    assert 'JDK=/opt/java/openjdk/bin/java' in capabilities_file
+    assert 'system.jdk.JDK\\ 11=/opt/java/openjdk/bin/java' in capabilities_file
