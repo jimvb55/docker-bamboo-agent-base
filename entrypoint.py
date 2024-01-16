@@ -9,9 +9,6 @@ RUN_USER = env['run_user']
 RUN_GROUP = env['run_group']
 BAMBOO_AGENT_HOME = env['bamboo_agent_home']
 BAMBOO_AGENT_INSTALL_DIR = env['bamboo_agent_install_dir']
-
-DOCKER_SOCK = '/var/run/docker.sock'
-
 BAMBOO_EPHEMERAL_AGENT_DATA_KEY = 'bamboo_ephemeral_agent_data'
 BAMBOO_EPHEMERAL_AGENT_DATA = env.get(BAMBOO_EPHEMERAL_AGENT_DATA_KEY)
 BAMBOO_EPHEMERAL_AGENT_DATA_MAP = {}
@@ -50,12 +47,6 @@ if ACCUMULATED_REMAINING_ENVIRONMENT_VARIABLES:
 
 gen_cfg('wrapper.conf.j2', f'{BAMBOO_AGENT_HOME}/conf/wrapper.conf',
         user=RUN_USER, group=RUN_GROUP, overwrite=False)
-
-# Although Docker is not installed in this base image, there's no easy way for an image
-# derived from this base to perform this particular step, which must be run at container
-# start rather than at build time.
-if os.path.exists(DOCKER_SOCK):
-    set_perms(DOCKER_SOCK, 'root', 'root', 0o666)
 
 JAVA_OPTS = f'-Dbamboo.home={BAMBOO_AGENT_HOME}'
 
