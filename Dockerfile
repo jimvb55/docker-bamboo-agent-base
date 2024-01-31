@@ -51,7 +51,7 @@ RUN groupadd --gid ${RUN_GID} ${RUN_GROUP} \
     && echo PATH=$PATH > /etc/environment \
     \
     && mkdir -p                             ${BAMBOO_AGENT_INSTALL_DIR} \
-    && chown -R ${RUN_USER}:${RUN_GROUP}    ${BAMBOO_AGENT_INSTALL_DIR} \
+    && chown -R ${RUN_USER}:root            ${BAMBOO_AGENT_INSTALL_DIR} \
     && curl -L --silent                     ${DOWNLOAD_URL} -o "${BAMBOO_AGENT_INSTALL_DIR}/atlassian-bamboo-agent-installer.jar" \
     && jar -tf                              "${BAMBOO_AGENT_INSTALL_DIR}/atlassian-bamboo-agent-installer.jar" \
     && mkdir -p                             ${BAMBOO_AGENT_HOME}/conf ${BAMBOO_AGENT_HOME}/bin \
@@ -65,7 +65,8 @@ RUN groupadd --gid ${RUN_GID} ${RUN_GROUP} \
     && /bamboo-update-capability.sh "Python" /usr/bin/python3 \
     && /bamboo-update-capability.sh "Python 3" /usr/bin/python3 \
     && /bamboo-update-capability.sh "Git" /usr/bin/git \
-    && chown -R ${RUN_USER}:${RUN_GROUP} ${BAMBOO_AGENT_HOME} \
+    && chown -R ${RUN_USER}:root ${BAMBOO_AGENT_HOME} \
+    && chmod -R 770 ${BAMBOO_AGENT_HOME} \
     && for file in "/opt/atlassian/support /entrypoint.py /entrypoint_helpers.py /probe-common.sh /probe-startup.sh /probe-readiness.sh /pre-launch.sh /bamboo-update-capability.sh"; do \
        chmod -R "u=rwX,g=rX,o=rX" ${file} && \
        chown -R root ${file}; done
