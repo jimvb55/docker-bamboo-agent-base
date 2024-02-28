@@ -31,15 +31,35 @@ wrapper.java.additional.4=-DDISABLE_AGENT_AUTO_CAPABILITY_DETECTION={{ disable_a
 wrapper.java.additional.5=--add-opens=java.base/java.util=ALL-UNNAMED
 wrapper.java.additional.6=--add-opens=java.base/java.lang=ALL-UNNAMED
 
-{% if bamboo_ephemeral_agent_data is not defined %}
-    wrapper.java.additional.7=-Dbamboo.agent.ephemeral.for.key={{ agent_ephemeral_for_key }}
-{% else %}
-    {% for element in bamboo_ephemeral_agent_data.split('#') %}
-        {% set parts = element.split('=') %}
-        {% set temp_index = loop.index + 6 %}
-        wrapper.java.additional.{{ temp_index }}=-D{{ parts[0] }}={{ parts[1] }}
-    {% endfor %}
-{% endif %}
+{%- set ns = namespace(index=7) %}
+{%- if bamboo_ephemeral_agent_data is not defined %}
+wrapper.java.additional.{{ ns.index }}=-Dbamboo.agent.ephemeral.for.key={{ agent_ephemeral_for_key }}
+{%- set ns.index = ns.index + 1 %}
+{%- else %}
+    {%- for element in bamboo_ephemeral_agent_data.split('#') %}
+        {%- set parts = element.split('=') %}
+        {%- if parts | length > 1 and parts[1] %}
+wrapper.java.additional.{{ ns.index }}=-D{{ parts[0] }}={{ parts[1] }}
+            {%- set ns.index = ns.index + 1 %}
+        {%- elif parts[0] %}
+wrapper.java.additional.{{ ns.index }}=-D{{ parts[0] }}
+            {%- set ns.index = ns.index + 1 %}
+        {%- endif %}
+    {%- endfor %}
+{%- endif %}
+
+{%- if bamboo_wrapper_java_additional_properties is defined %}
+    {%- for element in bamboo_wrapper_java_additional_properties.split('#') %}
+        {%- set parts = element.split('=') %}
+        {%- if parts | length > 1 and parts[1] %}
+wrapper.java.additional.{{ ns.index }}=-D{{ parts[0] }}={{ parts[1] }}
+            {%- set ns.index = ns.index + 1 %}
+        {%- elif parts[0] %}
+wrapper.java.additional.{{ ns.index }}=-D{{ parts[0] }}
+            {%- set ns.index = ns.index + 1 %}
+        {%- endif %}
+    {%- endfor %}
+{%- endif %}
 
 # Application parameters.  Add parameters as needed starting from 1
 wrapper.app.parameter.1=com.atlassian.bamboo.agent.bootstrap.AgentBootstrap

@@ -91,6 +91,11 @@ Run an Agent:
 
   The Bamboo Ephemeral Agents specific configuration. It was designed to pass multiple key-value properties separated by the `#`. Example: `BAMBOO_SERVER=http://localhost#SECURITY_TOKEN=123456789#bamboo.agent.ephemeral.for.key=PROJ-PLAN-JOB1-1`
 
+## Additional agent wrapper properties
+
+* `BAMBOO_WRAPPER_JAVA_ADDITIONAL_PROPERTIES` (default: NONE)
+
+  Adds `wrapper.java.additional.X` entries to the Agent's `conf/wrapper.conf`. It was designed to pass multiple key-value properties separated by the `#`. Example: `log4j2.configurationFile=/path/to/log4j2.properties#javax.net.ssl.keyStore=/var/atlassian/application-data/bamboo-agent/ssl/bamboo.secure.client.ks`
 
 # Extending base image
 
