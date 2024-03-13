@@ -70,4 +70,6 @@ AGENT_OPTS = [f'{BAMBOO_SERVER}']
 if SECURITY_TOKEN:
     AGENT_OPTS.extend(['-t', f'{SECURITY_TOKEN}'])
 
-exec_app(['/opt/java/openjdk/bin/java', JAVA_OPTS, '-jar', f'{BAMBOO_AGENT_INSTALL_DIR}/atlassian-bamboo-agent-installer.jar'] + AGENT_OPTS, BAMBOO_AGENT_HOME, name='Bamboo Agent', env_cleanup=True)
+java_home = os.getenv('JAVA_HOME')
+
+exec_app([f'{java_home}/bin/java', JAVA_OPTS, '-jar', f'{BAMBOO_AGENT_INSTALL_DIR}/atlassian-bamboo-agent-installer.jar'] + AGENT_OPTS, BAMBOO_AGENT_HOME, name='Bamboo Agent', env_cleanup=True)

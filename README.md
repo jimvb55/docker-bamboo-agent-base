@@ -133,6 +133,9 @@ Bamboo agent images are based on JDK 11, and generated from the
 [official Eclipse Temurin OpenJDK Docker images](https://hub.docker.com/_/eclipse-temurin).
 Starting from Bamboo 9.4 images are built on top of JDK 17.
 
+Starting from 9.4 [UBI based](https://catalog.redhat.com/software/containers/ubi9/openjdk-17/61ee7c26ed74b2ffb22b07f6?architecture=amd64) tags are published as well.
+UBI tags are available in 2 formats: `<version>-ubi9` and `<version>-ubi9-jdk17`.
+
 The Docker images follow the [Atlassian Support end-of-life
 policy](https://confluence.atlassian.com/support/atlassian-support-end-of-life-policy-201851003.html);
 images for unsupported versions of the products remain available but will no longer
@@ -149,6 +152,12 @@ Docker Hub, however they should be considered deprecated, and do not receive
 updates or fixes.
 
 If for some reason you need a different version, see "Building your own image".
+
+# Migration to UBI
+
+If you have been mounting any files to `${JAVA_HOME}` directory in `eclipse-temurin` based container, `JAVA_HOME` in UBI JDK17 container is set to `/usr/lib/jvm/java-17`.
+
+Also, if you have been mounting and running any custom scripts in the container, UBI-based images may lack some tools and utilities that are available out of the box in eclipse-temurin tags. If that's the case, see "Building your own image".
 
 # Support
 

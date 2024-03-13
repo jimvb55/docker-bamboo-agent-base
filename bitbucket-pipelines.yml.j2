@@ -109,6 +109,7 @@ pipelines:
                     {% if appdata.default_release %}
                     --default-release \
                     {% endif %}
+                    --dockerfile='{{ appdata.dockerfile }}' \
                     --dockerfile-buildargs='BASE_IMAGE={{ appdata.base_image }}' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
                     --mac-product-key='{{ appdata.mac_key }}' \
@@ -134,6 +135,7 @@ pipelines:
 
       - parallel:
         - step:
+            name: Unit tests
             image: python:3.7-alpine3.9
             services:
               - docker
@@ -147,6 +149,7 @@ pipelines:
               - export MAC_PRODUCT_KEY='bamboo'
               - py.test -v tests/
         - step:
+            name: Functional tests
             services:
               - docker
             script:
@@ -156,7 +159,31 @@ pipelines:
               - docker build --build-arg BAMBOO_VERSION=${BAMBOO_VERSION} -t test-image .
               - export IS_RELEASE=false
               - /usr/src/app/post_build.sh test-image $IS_RELEASE
-
+        - step:
+            name: Unit tests - UBI
+            image: python:3.7-alpine3.9
+            services:
+              - docker
+            script:
+              - apk add --no-cache git
+              - git submodule update --init --recursive
+              - pip install -q -r shared-components/tests/requirements.txt
+              - export PYTHONPATH=./shared-components/tests:$PYTHONPATH
+              - export DOCKERFILE='Dockerfile.ubi'
+              - export DOCKERFILE_VERSION_ARG='BAMBOO_VERSION'
+              - export MAC_PRODUCT_KEY='bamboo'
+              - py.test -v tests/
+        - step:
+            name: Functional tests - UBI 
+            services:
+              - docker
+            script:
+              - apk add --no-cache git docker-compose jq curl
+              - git submodule update --init --recursive
+              - export BAMBOO_VERSION=$(curl -s https://marketplace.atlassian.com/rest/2/products/key/bamboo/versions | jq -r '._embedded.versions | .[0].name')
+              - docker build --build-arg BAMBOO_VERSION=${BAMBOO_VERSION} -t test-image . -f Dockerfile.ubi
+              - export IS_RELEASE=false
+              - /usr/src/app/post_build.sh test-image $IS_RELEASE
 definitions:
   services:
     docker:

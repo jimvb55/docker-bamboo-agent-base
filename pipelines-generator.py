@@ -6,6 +6,15 @@ TEMPLATE_FILE = 'bitbucket-pipelines.yml.j2'
 images = {
 
     'Bamboo Agent': {
+        "17-ubi": {
+            'mac_key': 'bamboo',
+            'start_version': '9.4',
+            'default_release': True,
+            'base_image': 'registry.access.redhat.com/ubi9/openjdk-17',
+            'tag_suffixes': ['ubi9','ubi9-jdk17'],
+            'dockerfile': 'Dockerfile.ubi',
+            'docker_repos': ['atlassian/bamboo-agent-base'],
+        },
         17: {
             'mac_key': 'bamboo',
             'start_version': '9.4',
