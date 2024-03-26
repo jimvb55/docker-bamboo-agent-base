@@ -44,6 +44,8 @@ RUN mkdir -p ${MAVEN_HOME} \
 
 ARG BAMBOO_VERSION
 ARG DOWNLOAD_URL=https://packages.atlassian.com/mvn/maven-atlassian-external/com/atlassian/bamboo/atlassian-bamboo-agent-installer/${BAMBOO_VERSION}/atlassian-bamboo-agent-installer-${BAMBOO_VERSION}.jar
+ARG DOWNLOAD_USERNAME
+ARG DOWNLOAD_PASSWORD
 
 COPY bamboo-update-capability.sh /
 RUN groupadd --gid ${RUN_GID} ${RUN_GROUP} \
@@ -52,7 +54,11 @@ RUN groupadd --gid ${RUN_GID} ${RUN_GROUP} \
     \
     && mkdir -p                             ${BAMBOO_AGENT_INSTALL_DIR} \
     && chown -R ${RUN_USER}:root            ${BAMBOO_AGENT_INSTALL_DIR} \
-    && curl -L --silent                     ${DOWNLOAD_URL} -o "${BAMBOO_AGENT_INSTALL_DIR}/atlassian-bamboo-agent-installer.jar" \
+    && if [ -n "${DOWNLOAD_USERNAME}" ] && [ -n "${DOWNLOAD_PASSWORD}" ]; then \
+        curl -u ${DOWNLOAD_USERNAME}:${DOWNLOAD_PASSWORD} -L --silent ${DOWNLOAD_URL} -o "${BAMBOO_AGENT_INSTALL_DIR}/atlassian-bamboo-agent-installer.jar"; \
+    else \
+        curl -L --silent ${DOWNLOAD_URL} -o "${BAMBOO_AGENT_INSTALL_DIR}/atlassian-bamboo-agent-installer.jar"; \
+    fi \
     && jar -tf                              "${BAMBOO_AGENT_INSTALL_DIR}/atlassian-bamboo-agent-installer.jar" \
     && mkdir -p                             ${BAMBOO_AGENT_HOME}/conf ${BAMBOO_AGENT_HOME}/bin \
     \
