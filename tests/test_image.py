@@ -162,9 +162,8 @@ def test_jdk_capabilities(docker_cli, image, run_user):
     capabilities_file = container.file('/var/atlassian/application-data/bamboo-agent/bin/bamboo-capabilities.properties').content.decode('utf-8')
 
     jdk_path_1 = 'JDK=/opt/java/openjdk/bin/java'
-    jdk_path_2 = 'JDK=/usr/lib/jvm/java-17/bin/java'
     system_jdk_path_1 = 'system.jdk.JDK\\ 11=/opt/java/openjdk/bin/java'
-    system_jdk_path_2 = 'system.jdk.JDK\\ 17=/usr/lib/jvm/java-17/bin/java'
-    assert (jdk_path_1 in capabilities_file) or (jdk_path_2 in capabilities_file), "Expected JDK path not found"
+    system_jdk_path_2 = 'system.jdk.JDK\\ 17=/opt/java/openjdk/bin/java'
+    assert (jdk_path_1 in capabilities_file), "Expected JDK path not found"
     assert (system_jdk_path_1 in capabilities_file) or (system_jdk_path_2 in capabilities_file), "Expected system JDK path not found"
 
