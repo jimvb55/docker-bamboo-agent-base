@@ -181,7 +181,7 @@ pipelines:
               - apk add --no-cache git docker-compose jq curl
               - git submodule update --init --recursive
               - export BAMBOO_VERSION=$(curl -s https://marketplace.atlassian.com/rest/2/products/key/bamboo/versions | jq -r '._embedded.versions | .[0].name')
-              - docker build --build-arg BAMBOO_VERSION=${BAMBOO_VERSION} -f Dockerfile.ubi -t test-image .
+              - docker build --build-arg BAMBOO_VERSION=${BAMBOO_VERSION} -t test-image . -f Dockerfile.ubi
               - export IS_RELEASE=false
               - /usr/src/app/post_build.sh test-image $IS_RELEASE
 definitions:
