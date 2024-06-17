@@ -35,6 +35,8 @@ pipelines:
               script:
                 - git submodule update --init --recursive
                 - echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
                 - >
                   python /usr/src/app/make-releases.py \
                     --create --create-eap \
@@ -53,7 +55,8 @@ pipelines:
                     --job-offset='{{ offset }}' \
                     --jobs-total='{{ batches }}' \
                     --docker-repos='{{ appdata.docker_repos|join(',') }}' \
-                    --push
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
 
     {% endfor %}
   {% endfor %}
@@ -99,6 +102,8 @@ pipelines:
               script:
                 - git submodule update --init --recursive
                 - echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
                 - >
                   python /usr/src/app/make-releases.py \
                     --update \
@@ -117,7 +122,8 @@ pipelines:
                     --job-offset='{{ offset }}' \
                     --jobs-total='{{ batches }}' \
                     --docker-repos='{{ appdata.docker_repos|join(',') }}' \
-                    --push
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
 
     {% endfor %}
   {% endfor %}
