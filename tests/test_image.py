@@ -2,7 +2,7 @@ import pytest
 import time
 
 from helpers import get_app_home, get_app_install_dir, get_bootstrap_proc, get_procs, \
-    parse_properties, parse_xml, run_image, wait_for_http_response, wait_for_proc
+    parse_properties, parse_xml, run_image, wait_for_http_response, wait_for_proc, wait_for_file
 
 
 BOOTSTRAP_PROC = 'com.atlassian.bamboo.agent.bootstrap.AgentBootstrap'
@@ -169,3 +169,22 @@ def test_jdk_capabilities(docker_cli, image, run_user):
     assert (jdk_path_1 in capabilities_file) or (jdk_path_2 in capabilities_file), "Expected JDK path not found"
     assert (system_jdk_path_1 in capabilities_file) or (system_jdk_path_2 in capabilities_file) or (system_jdk_path_3 in capabilities_file), "Expected system JDK path not found"
 
+def test_wrapper_conf_java_versions(docker_cli, image, run_user):
+    bamboo_versions = {
+        '9.2.0': {'min': 8, 'max': 11, 'fallback': 8},
+        '9.6.0': {'min': 11, 'max': 17, 'fallback': 11},
+        '10.0.0': {'min': 17, 'max': 17, 'fallback': 17},
+    }
+    for version, expected in bamboo_versions.items():
+        environment = {
+            'BAMBOO_SERVER': 'http://localhost',
+            'BAMBOO_VERSION': version,
+        }
+        container = run_image(docker_cli, image, user=run_user, environment=environment)
+        wrapper_conf_path = '/var/atlassian/application-data/bamboo-agent/conf/wrapper.conf'
+        wait_for_file(container, wrapper_conf_path)
+        wrapper_conf_content = container.file(wrapper_conf_path).content.decode('utf-8')
+        print(f"{version} = min:{expected['min']}, max:{expected['max']}, fallback:{expected['fallback']}")
+        assert f'wrapper.java.version.min={expected["min"]}' in wrapper_conf_content, f"min version assertion failed for Bamboo version {version}"
+        assert f'wrapper.java.version.max={expected["max"]}' in wrapper_conf_content, f"max version assertion failed for Bamboo version {version}"
+        assert f'wrapper.java.version.fallback={expected["fallback"]}' in wrapper_conf_content, f"fallback version assertion failed for Bamboo version {version}"

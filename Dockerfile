@@ -43,6 +43,7 @@ RUN mkdir -p ${MAVEN_HOME} \
     && ln -s ${MAVEN_HOME}/bin/mvn /usr/local/bin/mvn
 
 ARG BAMBOO_VERSION
+ENV BAMBOO_VERSION                          ${BAMBOO_VERSION}
 ARG DOWNLOAD_URL=https://packages.atlassian.com/mvn/maven-atlassian-external/com/atlassian/bamboo/atlassian-bamboo-agent-installer/${BAMBOO_VERSION}/atlassian-bamboo-agent-installer-${BAMBOO_VERSION}.jar
 ARG DOWNLOAD_USERNAME
 ARG DOWNLOAD_PASSWORD

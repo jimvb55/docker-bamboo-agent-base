@@ -22,7 +22,7 @@ pipelines:
       - step:
           name: Check if pipelines config is up-to-date...
           script:
-            - python3 pipelines-generator.py > bitbucket-piplines.yml.expected && diff bitbucket-pipelines.yml bitbucket-piplines.yml.expected
+            - python3 pipelines-generator.py > bitbucket-pipelines.yml.expected && diff bitbucket-pipelines.yml bitbucket-pipelines.yml.expected
 
       - parallel:
 {% for (name, pdata) in images.items() %}
@@ -89,7 +89,7 @@ pipelines:
       - step:
           name: Check if pipelines config is up-to-date...
           script:
-            - python3 pipelines-generator.py > bitbucket-piplines.yml.expected && diff bitbucket-pipelines.yml bitbucket-piplines.yml.expected
+            - python3 pipelines-generator.py > bitbucket-pipelines.yml.expected && diff bitbucket-pipelines.yml bitbucket-pipelines.yml.expected
 
       - parallel:
 {% for (name, pdata) in images.items() %}
@@ -137,7 +137,7 @@ pipelines:
       - step:
           name: Check if pipelines config is up-to-date...
           script:
-            - python3 pipelines-generator.py > bitbucket-piplines.yml.expected && diff bitbucket-pipelines.yml bitbucket-piplines.yml.expected
+            - python3 pipelines-generator.py > bitbucket-pipelines.yml.expected && diff bitbucket-pipelines.yml bitbucket-pipelines.yml.expected
 
       - parallel:
         - step:
@@ -153,7 +153,7 @@ pipelines:
               - export DOCKERFILE='Dockerfile'
               - export DOCKERFILE_VERSION_ARG='BAMBOO_VERSION'
               - export MAC_PRODUCT_KEY='bamboo'
-              - py.test -v tests/
+              - py.test -v -s tests/
         - step:
             name: Functional tests
             services:
@@ -178,7 +178,7 @@ pipelines:
               - export DOCKERFILE='Dockerfile.ubi'
               - export DOCKERFILE_VERSION_ARG='BAMBOO_VERSION'
               - export MAC_PRODUCT_KEY='bamboo'
-              - py.test -v tests/
+              - py.test -v -s tests/
         - step:
             name: Functional tests - UBI 
             services:
