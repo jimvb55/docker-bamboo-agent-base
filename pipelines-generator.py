@@ -9,7 +9,6 @@ images = {
         "17-ubi": {
             'mac_key': 'bamboo',
             'start_version': '9.4',
-            'default_release': True,
             'base_image': 'registry.access.redhat.com/ubi9/openjdk-17',
             'tag_suffixes': ['ubi9','ubi9-jdk17'],
             'dockerfile': 'Dockerfile.ubi',
@@ -18,6 +17,7 @@ images = {
         17: {
             'mac_key': 'bamboo',
             'start_version': '9.4',
+            'default_release': True,
             'base_image': 'eclipse-temurin:17',
             'tag_suffixes': ['jdk17', 'ubuntu'],
             'dockerfile': 'Dockerfile',

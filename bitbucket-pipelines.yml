@@ -38,7 +38,6 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --create --create-eap \
                     --start-version='9.4' \
-                    --default-release \
                     --dockerfile='Dockerfile.ubi' \
                     --dockerfile-buildargs='BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -63,7 +62,6 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --create --create-eap \
                     --start-version='9.4' \
-                    --default-release \
                     --dockerfile='Dockerfile.ubi' \
                     --dockerfile-buildargs='BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -88,7 +86,6 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --create --create-eap \
                     --start-version='9.4' \
-                    --default-release \
                     --dockerfile='Dockerfile.ubi' \
                     --dockerfile-buildargs='BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -113,7 +110,6 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --create --create-eap \
                     --start-version='9.4' \
-                    --default-release \
                     --dockerfile='Dockerfile.ubi' \
                     --dockerfile-buildargs='BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -138,7 +134,6 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --create --create-eap \
                     --start-version='9.4' \
-                    --default-release \
                     --dockerfile='Dockerfile.ubi' \
                     --dockerfile-buildargs='BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -163,7 +158,6 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --create --create-eap \
                     --start-version='9.4' \
-                    --default-release \
                     --dockerfile='Dockerfile.ubi' \
                     --dockerfile-buildargs='BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -188,7 +182,6 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --create --create-eap \
                     --start-version='9.4' \
-                    --default-release \
                     --dockerfile='Dockerfile.ubi' \
                     --dockerfile-buildargs='BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -213,7 +206,6 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --create --create-eap \
                     --start-version='9.4' \
-                    --default-release \
                     --dockerfile='Dockerfile.ubi' \
                     --dockerfile-buildargs='BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -238,6 +230,7 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --create --create-eap \
                     --start-version='9.4' \
+                    --default-release \
                     --dockerfile='Dockerfile' \
                     --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -262,6 +255,7 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --create --create-eap \
                     --start-version='9.4' \
+                    --default-release \
                     --dockerfile='Dockerfile' \
                     --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -286,6 +280,7 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --create --create-eap \
                     --start-version='9.4' \
+                    --default-release \
                     --dockerfile='Dockerfile' \
                     --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -310,6 +305,7 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --create --create-eap \
                     --start-version='9.4' \
+                    --default-release \
                     --dockerfile='Dockerfile' \
                     --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -334,6 +330,7 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --create --create-eap \
                     --start-version='9.4' \
+                    --default-release \
                     --dockerfile='Dockerfile' \
                     --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -358,6 +355,7 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --create --create-eap \
                     --start-version='9.4' \
+                    --default-release \
                     --dockerfile='Dockerfile' \
                     --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -382,6 +380,7 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --create --create-eap \
                     --start-version='9.4' \
+                    --default-release \
                     --dockerfile='Dockerfile' \
                     --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -406,6 +405,7 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --create --create-eap \
                     --start-version='9.4' \
+                    --default-release \
                     --dockerfile='Dockerfile' \
                     --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -661,7 +661,6 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --update \
                     --start-version='9.4' \
-                    --default-release \
                     --dockerfile='Dockerfile.ubi' \
                     --dockerfile-buildargs='BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -686,7 +685,6 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --update \
                     --start-version='9.4' \
-                    --default-release \
                     --dockerfile='Dockerfile.ubi' \
                     --dockerfile-buildargs='BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -711,7 +709,6 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --update \
                     --start-version='9.4' \
-                    --default-release \
                     --dockerfile='Dockerfile.ubi' \
                     --dockerfile-buildargs='BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -736,7 +733,6 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --update \
                     --start-version='9.4' \
-                    --default-release \
                     --dockerfile='Dockerfile.ubi' \
                     --dockerfile-buildargs='BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -761,7 +757,6 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --update \
                     --start-version='9.4' \
-                    --default-release \
                     --dockerfile='Dockerfile.ubi' \
                     --dockerfile-buildargs='BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -786,7 +781,6 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --update \
                     --start-version='9.4' \
-                    --default-release \
                     --dockerfile='Dockerfile.ubi' \
                     --dockerfile-buildargs='BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -811,7 +805,6 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --update \
                     --start-version='9.4' \
-                    --default-release \
                     --dockerfile='Dockerfile.ubi' \
                     --dockerfile-buildargs='BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -836,7 +829,6 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --update \
                     --start-version='9.4' \
-                    --default-release \
                     --dockerfile='Dockerfile.ubi' \
                     --dockerfile-buildargs='BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -861,6 +853,7 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --update \
                     --start-version='9.4' \
+                    --default-release \
                     --dockerfile='Dockerfile' \
                     --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -885,6 +878,7 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --update \
                     --start-version='9.4' \
+                    --default-release \
                     --dockerfile='Dockerfile' \
                     --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -909,6 +903,7 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --update \
                     --start-version='9.4' \
+                    --default-release \
                     --dockerfile='Dockerfile' \
                     --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -933,6 +928,7 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --update \
                     --start-version='9.4' \
+                    --default-release \
                     --dockerfile='Dockerfile' \
                     --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -957,6 +953,7 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --update \
                     --start-version='9.4' \
+                    --default-release \
                     --dockerfile='Dockerfile' \
                     --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -981,6 +978,7 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --update \
                     --start-version='9.4' \
+                    --default-release \
                     --dockerfile='Dockerfile' \
                     --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -1005,6 +1003,7 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --update \
                     --start-version='9.4' \
+                    --default-release \
                     --dockerfile='Dockerfile' \
                     --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -1029,6 +1028,7 @@ pipelines:
                   python /usr/src/app/make-releases.py \
                     --update \
                     --start-version='9.4' \
+                    --default-release \
                     --dockerfile='Dockerfile' \
                     --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
