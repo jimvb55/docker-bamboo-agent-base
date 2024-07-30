@@ -19,6 +19,13 @@ include a Bamboo server.
 
 **Use docker version >= 20.10.9.**
 
+# Available Ubuntu base versions
+This image is based on [Eclipse Temurin](https://hub.docker.com/_/eclipse-temurin) and ships with Ubuntu 24.04 (Noble).
+For users requiring the earlier Ubuntu Jammy (22.04) version, the `jdk11-jammy` and `jdk17-jammy` tags are available.
+
+**Note:** The `-jammy` tags are not maintained and are provided solely for compatibility and migration purposes. 
+It is strongly recommended to use the latest `jdk11` or `jdk17` tags in production environments to ensure you receive the latest updates and security patches.
+
 # Quick Start
 
 For the `BAMBOO_AGENT_HOME` directory that is used to store the repository data (amongst other things) we recommend mounting a host directory as a [data volume](https://docs.docker.com/engine/tutorials/dockervolumes/#/data-volumes), or via a named volume.
