@@ -38,7 +38,7 @@ RUN microdnf upgrade -y \
     && microdnf install -y --setopt=install_weak_deps=0 git git-lfs openssh python3 python3-jinja2 gzip procps-ng util-linux which \
     && microdnf clean all
 
-ENV MAVEN_VERSION=3.6.3
+ENV MAVEN_VERSION=3.9.9
 ENV MAVEN_HOME                              /opt/maven
 RUN mkdir -p ${MAVEN_HOME} \
     && curl -L --silent https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz | tar -xz --strip-components=1 -C "${MAVEN_HOME}" \

@@ -36,7 +36,7 @@ RUN apt-get update \
          tini \
     && apt-get clean autoclean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
-ARG MAVEN_VERSION=3.6.3
+ARG MAVEN_VERSION=3.9.9
 ENV MAVEN_HOME                              /opt/maven
 RUN mkdir -p ${MAVEN_HOME} \
     && curl -L --silent https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz | tar -xz --strip-components=1 -C "${MAVEN_HOME}" \
