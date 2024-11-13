@@ -111,22 +111,23 @@ wrapper.max_failed_invocations=1440
 # Wrapper General Properties
 #********************************************************************
 {%- set version = (bamboo_version.split('.')[0] + '.' + bamboo_version.split('.')[1]) | float %}
-{%- set java_min_version = 11 %}
-{%- set java_max_version = 17 %}
-{%- set fallback_version = java_min_version %}
-{%- if version >= 9.2 and version < 9.6 %}
+{%- if version >= 9.1 and version < 9.3 %}
     {%- set java_min_version = 8 %}
     {%- set java_max_version = 11 %}
-    {%- set fallback_version = java_min_version %}
-{%- elif version >= 9.6 and version < 10.0 %}
+{%- elif version == 9.3 %}
+    {%- set java_min_version = 11 %}
+    {%- set java_max_version = 11 %}
+{%- elif version >= 9.4 and version < 10.0 %}
     {%- set java_min_version = 11 %}
     {%- set java_max_version = 17 %}
-    {%- set fallback_version = java_min_version %}
-{%- elif version >= 10.0 %}
+{%- elif version == 10.0 %}
     {%- set java_min_version = 17 %}
     {%- set java_max_version = 17 %}
-    {%- set fallback_version = java_min_version %}
+{%- elif version >= 10.1 %}
+    {%- set java_min_version = 17 %}
+    {%- set java_max_version = 21 %}
 {%- endif %}
+{%- set fallback_version = java_min_version %}
 # Title to use when running as a console
 wrapper.console.title=Bamboo Remote Agent
 wrapper.java.version.min={{ java_min_version }}

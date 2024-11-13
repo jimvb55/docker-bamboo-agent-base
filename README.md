@@ -8,7 +8,7 @@ If you are looking for **Bamboo Server Docker Image** it can be found [here](htt
 This Docker container makes it easy to get a Bamboo Remote Agent up and running. It is intended to be used as a base to build from, and as such
 contains limited built-in capabilities:
 
-* JDK 11 (JDK 17 starting from v9.4.0)
+* JDK 11, JDK 17 (from v9.4.0), JDK 21 (from v10.1.0)
 * Git & Git LFS
 * Maven 3
 * Python 3
@@ -24,7 +24,7 @@ This image is based on [Eclipse Temurin](https://hub.docker.com/_/eclipse-temuri
 For users requiring the earlier Ubuntu Jammy (22.04) version, the `jdk11-jammy` and `jdk17-jammy` tags are available.
 
 **Note:** The `-jammy` tags are not maintained and are provided solely for compatibility and migration purposes. 
-It is strongly recommended to use the latest `jdk11` or `jdk17` tags in production environments to ensure you receive the latest updates and security patches.
+It is strongly recommended to use the latest `jdk11`, `jdk17`, `jdk21` tags in production environments to ensure you receive the latest updates and security patches.
 
 # Quick Start
 

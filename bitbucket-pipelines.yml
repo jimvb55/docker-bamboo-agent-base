@@ -26,6 +26,106 @@ pipelines:
 
       - parallel:
           - step:
+              name: Bamboo Agent JDK 21 - Batch 1
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --create --create-eap \
+                    --start-version='10.1' \
+                    --default-release \
+                    --dockerfile='Dockerfile' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:21-noble' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='jdk21,ubuntu' \
+                    --job-offset='0' \
+                    --jobs-total='1' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 21-ubi - Batch 1
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - export SEV_THRESHOLD=critical
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --create --create-eap \
+                    --start-version='10.1' \
+                    --dockerfile='Dockerfile.ubi' \
+                    --dockerfile-buildargs='BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-21' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='ubi9,ubi9-jdk21' \
+                    --job-offset='0' \
+                    --jobs-total='1' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 17-default - Batch 1
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --create --create-eap \
+                    --start-version='9.4' \
+                    --end-version='10.1' \
+                    --default-release \
+                    --dockerfile='Dockerfile' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17-noble' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='jdk17,ubuntu' \
+                    --job-offset='0' \
+                    --jobs-total='1' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 17 - Batch 1
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --create --create-eap \
+                    --start-version='10.1' \
+                    --dockerfile='Dockerfile' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17-noble' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='jdk17,ubuntu' \
+                    --job-offset='0' \
+                    --jobs-total='1' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
               name: Bamboo Agent JDK 17-ubi - Batch 1
               services:
                 - docker
@@ -51,7 +151,7 @@ pipelines:
                     --platforms=linux/amd64,linux/arm64
 
           - step:
-              name: Bamboo Agent JDK 17 - Batch 1
+              name: Bamboo Agent JDK 11-default - Batch 1
               services:
                 - docker
               script:
@@ -62,13 +162,14 @@ pipelines:
                 - >
                   python /usr/src/app/make-releases.py \
                     --create --create-eap \
-                    --start-version='9.4' \
+                    --start-version='9.1' \
+                    --end-version='9.4' \
                     --default-release \
                     --dockerfile='Dockerfile' \
-                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17-noble' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11-noble' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
                     --mac-product-key='bamboo' \
-                    --tag-suffixes='jdk17,ubuntu' \
+                    --tag-suffixes='jdk11,ubuntu' \
                     --job-offset='0' \
                     --jobs-total='1' \
                     --docker-repos='atlassian/bamboo-agent-base' \
@@ -87,9 +188,8 @@ pipelines:
                 - >
                   python /usr/src/app/make-releases.py \
                     --create --create-eap \
-                    --start-version='9.1' \
-                    --end-version='9.4' \
-                    --default-release \
+                    --start-version='9.4' \
+                    --end-version='10' \
                     --dockerfile='Dockerfile' \
                     --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11-noble' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -132,6 +232,806 @@ pipelines:
             - python3 pipelines-generator.py > bitbucket-pipelines.yml.expected && diff bitbucket-pipelines.yml bitbucket-pipelines.yml.expected
 
       - parallel:
+          - step:
+              name: Bamboo Agent JDK 21 - Batch 1
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='10.1' \
+                    --default-release \
+                    --dockerfile='Dockerfile' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:21-noble' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='jdk21,ubuntu' \
+                    --job-offset='0' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 21 - Batch 2
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='10.1' \
+                    --default-release \
+                    --dockerfile='Dockerfile' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:21-noble' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='jdk21,ubuntu' \
+                    --job-offset='1' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 21 - Batch 3
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='10.1' \
+                    --default-release \
+                    --dockerfile='Dockerfile' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:21-noble' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='jdk21,ubuntu' \
+                    --job-offset='2' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 21 - Batch 4
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='10.1' \
+                    --default-release \
+                    --dockerfile='Dockerfile' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:21-noble' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='jdk21,ubuntu' \
+                    --job-offset='3' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 21 - Batch 5
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='10.1' \
+                    --default-release \
+                    --dockerfile='Dockerfile' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:21-noble' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='jdk21,ubuntu' \
+                    --job-offset='4' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 21 - Batch 6
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='10.1' \
+                    --default-release \
+                    --dockerfile='Dockerfile' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:21-noble' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='jdk21,ubuntu' \
+                    --job-offset='5' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 21 - Batch 7
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='10.1' \
+                    --default-release \
+                    --dockerfile='Dockerfile' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:21-noble' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='jdk21,ubuntu' \
+                    --job-offset='6' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 21 - Batch 8
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='10.1' \
+                    --default-release \
+                    --dockerfile='Dockerfile' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:21-noble' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='jdk21,ubuntu' \
+                    --job-offset='7' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 21-ubi - Batch 1
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - export SEV_THRESHOLD=critical
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='10.1' \
+                    --dockerfile='Dockerfile.ubi' \
+                    --dockerfile-buildargs='BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-21' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='ubi9,ubi9-jdk21' \
+                    --job-offset='0' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 21-ubi - Batch 2
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - export SEV_THRESHOLD=critical
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='10.1' \
+                    --dockerfile='Dockerfile.ubi' \
+                    --dockerfile-buildargs='BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-21' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='ubi9,ubi9-jdk21' \
+                    --job-offset='1' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 21-ubi - Batch 3
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - export SEV_THRESHOLD=critical
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='10.1' \
+                    --dockerfile='Dockerfile.ubi' \
+                    --dockerfile-buildargs='BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-21' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='ubi9,ubi9-jdk21' \
+                    --job-offset='2' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 21-ubi - Batch 4
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - export SEV_THRESHOLD=critical
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='10.1' \
+                    --dockerfile='Dockerfile.ubi' \
+                    --dockerfile-buildargs='BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-21' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='ubi9,ubi9-jdk21' \
+                    --job-offset='3' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 21-ubi - Batch 5
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - export SEV_THRESHOLD=critical
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='10.1' \
+                    --dockerfile='Dockerfile.ubi' \
+                    --dockerfile-buildargs='BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-21' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='ubi9,ubi9-jdk21' \
+                    --job-offset='4' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 21-ubi - Batch 6
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - export SEV_THRESHOLD=critical
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='10.1' \
+                    --dockerfile='Dockerfile.ubi' \
+                    --dockerfile-buildargs='BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-21' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='ubi9,ubi9-jdk21' \
+                    --job-offset='5' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 21-ubi - Batch 7
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - export SEV_THRESHOLD=critical
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='10.1' \
+                    --dockerfile='Dockerfile.ubi' \
+                    --dockerfile-buildargs='BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-21' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='ubi9,ubi9-jdk21' \
+                    --job-offset='6' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 21-ubi - Batch 8
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - export SEV_THRESHOLD=critical
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='10.1' \
+                    --dockerfile='Dockerfile.ubi' \
+                    --dockerfile-buildargs='BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-21' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='ubi9,ubi9-jdk21' \
+                    --job-offset='7' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 17-default - Batch 1
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='9.4' \
+                    --end-version='10.1' \
+                    --default-release \
+                    --dockerfile='Dockerfile' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17-noble' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='jdk17,ubuntu' \
+                    --job-offset='0' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 17-default - Batch 2
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='9.4' \
+                    --end-version='10.1' \
+                    --default-release \
+                    --dockerfile='Dockerfile' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17-noble' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='jdk17,ubuntu' \
+                    --job-offset='1' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 17-default - Batch 3
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='9.4' \
+                    --end-version='10.1' \
+                    --default-release \
+                    --dockerfile='Dockerfile' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17-noble' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='jdk17,ubuntu' \
+                    --job-offset='2' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 17-default - Batch 4
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='9.4' \
+                    --end-version='10.1' \
+                    --default-release \
+                    --dockerfile='Dockerfile' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17-noble' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='jdk17,ubuntu' \
+                    --job-offset='3' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 17-default - Batch 5
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='9.4' \
+                    --end-version='10.1' \
+                    --default-release \
+                    --dockerfile='Dockerfile' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17-noble' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='jdk17,ubuntu' \
+                    --job-offset='4' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 17-default - Batch 6
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='9.4' \
+                    --end-version='10.1' \
+                    --default-release \
+                    --dockerfile='Dockerfile' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17-noble' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='jdk17,ubuntu' \
+                    --job-offset='5' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 17-default - Batch 7
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='9.4' \
+                    --end-version='10.1' \
+                    --default-release \
+                    --dockerfile='Dockerfile' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17-noble' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='jdk17,ubuntu' \
+                    --job-offset='6' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 17-default - Batch 8
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='9.4' \
+                    --end-version='10.1' \
+                    --default-release \
+                    --dockerfile='Dockerfile' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17-noble' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='jdk17,ubuntu' \
+                    --job-offset='7' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 17 - Batch 1
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='10.1' \
+                    --dockerfile='Dockerfile' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17-noble' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='jdk17,ubuntu' \
+                    --job-offset='0' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 17 - Batch 2
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='10.1' \
+                    --dockerfile='Dockerfile' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17-noble' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='jdk17,ubuntu' \
+                    --job-offset='1' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 17 - Batch 3
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='10.1' \
+                    --dockerfile='Dockerfile' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17-noble' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='jdk17,ubuntu' \
+                    --job-offset='2' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 17 - Batch 4
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='10.1' \
+                    --dockerfile='Dockerfile' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17-noble' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='jdk17,ubuntu' \
+                    --job-offset='3' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 17 - Batch 5
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='10.1' \
+                    --dockerfile='Dockerfile' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17-noble' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='jdk17,ubuntu' \
+                    --job-offset='4' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 17 - Batch 6
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='10.1' \
+                    --dockerfile='Dockerfile' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17-noble' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='jdk17,ubuntu' \
+                    --job-offset='5' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 17 - Batch 7
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='10.1' \
+                    --dockerfile='Dockerfile' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17-noble' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='jdk17,ubuntu' \
+                    --job-offset='6' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
+          - step:
+              name: Bamboo Agent JDK 17 - Batch 8
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - for i in {1..3}; do echo ${DOCKER_BOT_PASSWORD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_BOT_USERNAME} --password-stdin && break || sleep 5; done; if [ $? -ne 0 ]; then echo "Failed to login to container registry after 3 attempts" && exit 1; fi
+                - docker buildx create --name container --driver docker-container --use
+                - docker buildx ls
+                - >
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version='10.1' \
+                    --dockerfile='Dockerfile' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17-noble' \
+                    --dockerfile-version-arg='BAMBOO_VERSION' \
+                    --mac-product-key='bamboo' \
+                    --tag-suffixes='jdk17,ubuntu' \
+                    --job-offset='7' \
+                    --jobs-total='8' \
+                    --docker-repos='atlassian/bamboo-agent-base' \
+                    --push \
+                    --platforms=linux/amd64,linux/arm64
+
           - step:
               name: Bamboo Agent JDK 17-ubi - Batch 1
               services:
@@ -333,7 +1233,7 @@ pipelines:
                     --platforms=linux/amd64,linux/arm64
 
           - step:
-              name: Bamboo Agent JDK 17 - Batch 1
+              name: Bamboo Agent JDK 11-default - Batch 1
               services:
                 - docker
               script:
@@ -344,13 +1244,14 @@ pipelines:
                 - >
                   python /usr/src/app/make-releases.py \
                     --update \
-                    --start-version='9.4' \
+                    --start-version='9.1' \
+                    --end-version='9.4' \
                     --default-release \
                     --dockerfile='Dockerfile' \
-                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17-noble' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11-noble' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
                     --mac-product-key='bamboo' \
-                    --tag-suffixes='jdk17,ubuntu' \
+                    --tag-suffixes='jdk11,ubuntu' \
                     --job-offset='0' \
                     --jobs-total='8' \
                     --docker-repos='atlassian/bamboo-agent-base' \
@@ -358,7 +1259,7 @@ pipelines:
                     --platforms=linux/amd64,linux/arm64
 
           - step:
-              name: Bamboo Agent JDK 17 - Batch 2
+              name: Bamboo Agent JDK 11-default - Batch 2
               services:
                 - docker
               script:
@@ -369,13 +1270,14 @@ pipelines:
                 - >
                   python /usr/src/app/make-releases.py \
                     --update \
-                    --start-version='9.4' \
+                    --start-version='9.1' \
+                    --end-version='9.4' \
                     --default-release \
                     --dockerfile='Dockerfile' \
-                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17-noble' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11-noble' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
                     --mac-product-key='bamboo' \
-                    --tag-suffixes='jdk17,ubuntu' \
+                    --tag-suffixes='jdk11,ubuntu' \
                     --job-offset='1' \
                     --jobs-total='8' \
                     --docker-repos='atlassian/bamboo-agent-base' \
@@ -383,7 +1285,7 @@ pipelines:
                     --platforms=linux/amd64,linux/arm64
 
           - step:
-              name: Bamboo Agent JDK 17 - Batch 3
+              name: Bamboo Agent JDK 11-default - Batch 3
               services:
                 - docker
               script:
@@ -394,13 +1296,14 @@ pipelines:
                 - >
                   python /usr/src/app/make-releases.py \
                     --update \
-                    --start-version='9.4' \
+                    --start-version='9.1' \
+                    --end-version='9.4' \
                     --default-release \
                     --dockerfile='Dockerfile' \
-                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17-noble' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11-noble' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
                     --mac-product-key='bamboo' \
-                    --tag-suffixes='jdk17,ubuntu' \
+                    --tag-suffixes='jdk11,ubuntu' \
                     --job-offset='2' \
                     --jobs-total='8' \
                     --docker-repos='atlassian/bamboo-agent-base' \
@@ -408,7 +1311,7 @@ pipelines:
                     --platforms=linux/amd64,linux/arm64
 
           - step:
-              name: Bamboo Agent JDK 17 - Batch 4
+              name: Bamboo Agent JDK 11-default - Batch 4
               services:
                 - docker
               script:
@@ -419,13 +1322,14 @@ pipelines:
                 - >
                   python /usr/src/app/make-releases.py \
                     --update \
-                    --start-version='9.4' \
+                    --start-version='9.1' \
+                    --end-version='9.4' \
                     --default-release \
                     --dockerfile='Dockerfile' \
-                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17-noble' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11-noble' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
                     --mac-product-key='bamboo' \
-                    --tag-suffixes='jdk17,ubuntu' \
+                    --tag-suffixes='jdk11,ubuntu' \
                     --job-offset='3' \
                     --jobs-total='8' \
                     --docker-repos='atlassian/bamboo-agent-base' \
@@ -433,7 +1337,7 @@ pipelines:
                     --platforms=linux/amd64,linux/arm64
 
           - step:
-              name: Bamboo Agent JDK 17 - Batch 5
+              name: Bamboo Agent JDK 11-default - Batch 5
               services:
                 - docker
               script:
@@ -444,13 +1348,14 @@ pipelines:
                 - >
                   python /usr/src/app/make-releases.py \
                     --update \
-                    --start-version='9.4' \
+                    --start-version='9.1' \
+                    --end-version='9.4' \
                     --default-release \
                     --dockerfile='Dockerfile' \
-                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17-noble' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11-noble' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
                     --mac-product-key='bamboo' \
-                    --tag-suffixes='jdk17,ubuntu' \
+                    --tag-suffixes='jdk11,ubuntu' \
                     --job-offset='4' \
                     --jobs-total='8' \
                     --docker-repos='atlassian/bamboo-agent-base' \
@@ -458,7 +1363,7 @@ pipelines:
                     --platforms=linux/amd64,linux/arm64
 
           - step:
-              name: Bamboo Agent JDK 17 - Batch 6
+              name: Bamboo Agent JDK 11-default - Batch 6
               services:
                 - docker
               script:
@@ -469,13 +1374,14 @@ pipelines:
                 - >
                   python /usr/src/app/make-releases.py \
                     --update \
-                    --start-version='9.4' \
+                    --start-version='9.1' \
+                    --end-version='9.4' \
                     --default-release \
                     --dockerfile='Dockerfile' \
-                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17-noble' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11-noble' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
                     --mac-product-key='bamboo' \
-                    --tag-suffixes='jdk17,ubuntu' \
+                    --tag-suffixes='jdk11,ubuntu' \
                     --job-offset='5' \
                     --jobs-total='8' \
                     --docker-repos='atlassian/bamboo-agent-base' \
@@ -483,7 +1389,7 @@ pipelines:
                     --platforms=linux/amd64,linux/arm64
 
           - step:
-              name: Bamboo Agent JDK 17 - Batch 7
+              name: Bamboo Agent JDK 11-default - Batch 7
               services:
                 - docker
               script:
@@ -494,13 +1400,14 @@ pipelines:
                 - >
                   python /usr/src/app/make-releases.py \
                     --update \
-                    --start-version='9.4' \
+                    --start-version='9.1' \
+                    --end-version='9.4' \
                     --default-release \
                     --dockerfile='Dockerfile' \
-                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17-noble' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11-noble' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
                     --mac-product-key='bamboo' \
-                    --tag-suffixes='jdk17,ubuntu' \
+                    --tag-suffixes='jdk11,ubuntu' \
                     --job-offset='6' \
                     --jobs-total='8' \
                     --docker-repos='atlassian/bamboo-agent-base' \
@@ -508,7 +1415,7 @@ pipelines:
                     --platforms=linux/amd64,linux/arm64
 
           - step:
-              name: Bamboo Agent JDK 17 - Batch 8
+              name: Bamboo Agent JDK 11-default - Batch 8
               services:
                 - docker
               script:
@@ -519,13 +1426,14 @@ pipelines:
                 - >
                   python /usr/src/app/make-releases.py \
                     --update \
-                    --start-version='9.4' \
+                    --start-version='9.1' \
+                    --end-version='9.4' \
                     --default-release \
                     --dockerfile='Dockerfile' \
-                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:17-noble' \
+                    --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11-noble' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
                     --mac-product-key='bamboo' \
-                    --tag-suffixes='jdk17,ubuntu' \
+                    --tag-suffixes='jdk11,ubuntu' \
                     --job-offset='7' \
                     --jobs-total='8' \
                     --docker-repos='atlassian/bamboo-agent-base' \
@@ -544,9 +1452,8 @@ pipelines:
                 - >
                   python /usr/src/app/make-releases.py \
                     --update \
-                    --start-version='9.1' \
-                    --end-version='9.4' \
-                    --default-release \
+                    --start-version='9.4' \
+                    --end-version='10' \
                     --dockerfile='Dockerfile' \
                     --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11-noble' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -570,9 +1477,8 @@ pipelines:
                 - >
                   python /usr/src/app/make-releases.py \
                     --update \
-                    --start-version='9.1' \
-                    --end-version='9.4' \
-                    --default-release \
+                    --start-version='9.4' \
+                    --end-version='10' \
                     --dockerfile='Dockerfile' \
                     --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11-noble' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -596,9 +1502,8 @@ pipelines:
                 - >
                   python /usr/src/app/make-releases.py \
                     --update \
-                    --start-version='9.1' \
-                    --end-version='9.4' \
-                    --default-release \
+                    --start-version='9.4' \
+                    --end-version='10' \
                     --dockerfile='Dockerfile' \
                     --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11-noble' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -622,9 +1527,8 @@ pipelines:
                 - >
                   python /usr/src/app/make-releases.py \
                     --update \
-                    --start-version='9.1' \
-                    --end-version='9.4' \
-                    --default-release \
+                    --start-version='9.4' \
+                    --end-version='10' \
                     --dockerfile='Dockerfile' \
                     --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11-noble' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -648,9 +1552,8 @@ pipelines:
                 - >
                   python /usr/src/app/make-releases.py \
                     --update \
-                    --start-version='9.1' \
-                    --end-version='9.4' \
-                    --default-release \
+                    --start-version='9.4' \
+                    --end-version='10' \
                     --dockerfile='Dockerfile' \
                     --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11-noble' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -674,9 +1577,8 @@ pipelines:
                 - >
                   python /usr/src/app/make-releases.py \
                     --update \
-                    --start-version='9.1' \
-                    --end-version='9.4' \
-                    --default-release \
+                    --start-version='9.4' \
+                    --end-version='10' \
                     --dockerfile='Dockerfile' \
                     --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11-noble' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -700,9 +1602,8 @@ pipelines:
                 - >
                   python /usr/src/app/make-releases.py \
                     --update \
-                    --start-version='9.1' \
-                    --end-version='9.4' \
-                    --default-release \
+                    --start-version='9.4' \
+                    --end-version='10' \
                     --dockerfile='Dockerfile' \
                     --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11-noble' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
@@ -726,9 +1627,8 @@ pipelines:
                 - >
                   python /usr/src/app/make-releases.py \
                     --update \
-                    --start-version='9.1' \
-                    --end-version='9.4' \
-                    --default-release \
+                    --start-version='9.4' \
+                    --end-version='10' \
                     --dockerfile='Dockerfile' \
                     --dockerfile-buildargs='BASE_IMAGE=eclipse-temurin:11-noble' \
                     --dockerfile-version-arg='BAMBOO_VERSION' \
