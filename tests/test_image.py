@@ -113,7 +113,38 @@ def test_wrapper_conf_with_bamboo_wrapper_java_additional_properties_no_ephemera
     assert f'-Xmx{environment["WRAPPER_JAVA_MAXMEMORY"]}m' in jvm
     assert f'-Dbamboo.agent.ignoreServerCertName={environment["IGNORE_SERVER_CERT_NAME"]}' in jvm
     assert f'-Dbamboo.allow.empty.artifacts={environment["ALLOW_EMPTY_ARTIFACTS"]}' in jvm
-    assert f'-Dbamboo.agent.ephemeral.for.key=' in jvm  # this is included regardless of ephemeral properties
+
+    # additional properties
+    assert '-Dprop1=val1' in jvm
+    assert '-Dprop2=val2' in jvm
+    assert '-Dprop3' in jvm
+
+def test_wrapper_conf_with_bamboo_wrapper_java_additional_properties_no_ephemeral_but_with_agent_ephemeral_for_key(docker_cli, image, run_user):
+    bamboo_server_val = 'http://localhost/override'
+    token_val = '123'
+    environment = {
+        'WRAPPER_JAVA_INITMEMORY': '383',
+        'WRAPPER_JAVA_MAXMEMORY': '576',
+        'IGNORE_SERVER_CERT_NAME': 'true',
+        'ALLOW_EMPTY_ARTIFACTS': 'true',
+        'BAMBOO_SERVER': bamboo_server_val,
+        'SECURITY_TOKEN': token_val,
+        'BAMBOO_WRAPPER_JAVA_ADDITIONAL_PROPERTIES': 'prop1=val1#prop2=val2#prop3',
+        'AGENT_EPHEMERAL_FOR_KEY': 'PROJ-PLAN-JOB1-2'
+    }
+    container = run_image(docker_cli, image, user=run_user, environment=environment)
+    _jvm = wait_for_proc(container, BOOTSTRAP_PROC)
+
+    procs_list = get_procs(container)
+    jvm = [proc for proc in procs_list if BOOTSTRAP_PROC in proc][0]
+
+    assert bamboo_server_val + '/agentServer' in jvm
+    assert token_val in jvm # token
+    assert f'-Xms{environment["WRAPPER_JAVA_INITMEMORY"]}m' in jvm
+    assert f'-Xmx{environment["WRAPPER_JAVA_MAXMEMORY"]}m' in jvm
+    assert f'-Dbamboo.agent.ignoreServerCertName={environment["IGNORE_SERVER_CERT_NAME"]}' in jvm
+    assert f'-Dbamboo.allow.empty.artifacts={environment["ALLOW_EMPTY_ARTIFACTS"]}' in jvm
+    assert f'-Dbamboo.agent.ephemeral.for.key={environment["AGENT_EPHEMERAL_FOR_KEY"]}' in jvm
 
     # additional properties
     assert '-Dprop1=val1' in jvm

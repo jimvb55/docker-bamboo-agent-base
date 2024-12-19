@@ -37,10 +37,10 @@ wrapper.java.additional.5=--add-opens=java.base/java.util=ALL-UNNAMED
 wrapper.java.additional.6=--add-opens=java.base/java.lang=ALL-UNNAMED
 
 {%- set ns = namespace(index=7) %}
-{%- if bamboo_ephemeral_agent_data is not defined %}
+{%- if bamboo_ephemeral_agent_data is not defined and agent_ephemeral_for_key is defined %}
 wrapper.java.additional.{{ ns.index }}=-Dbamboo.agent.ephemeral.for.key={{ agent_ephemeral_for_key }}
 {%- set ns.index = ns.index + 1 %}
-{%- else %}
+{%- elif bamboo_ephemeral_agent_data is defined %}
     {%- for element in bamboo_ephemeral_agent_data.split('#') %}
         {%- set parts = element.split('=') %}
         {%- if parts | length > 1 and parts[1] %}
