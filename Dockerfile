@@ -1,3 +1,23 @@
+# Available Eclipse Temurin OpenJDK images:
+#
+# Ubuntu 24.04 (Noble) based images:
+# - eclipse-temurin:8-noble
+# - eclipse-temurin:11-noble
+# - eclipse-temurin:17-noble
+# - eclipse-temurin:21-noble
+#
+# Ubuntu 22.04 (Jammy) based images:
+# - eclipse-temurin:8-jammy
+# - eclipse-temurin:11-jammy
+# - eclipse-temurin:17-jammy
+# - eclipse-temurin:21-jammy
+#
+# Debian 12 (Bookworm) based images:
+# - eclipse-temurin:8-bookworm
+# - eclipse-temurin:11-bookworm
+# - eclipse-temurin:17-bookworm
+# - eclipse-temurin:21-bookworm
+
 ARG BASE_IMAGE=eclipse-temurin:17-noble
 FROM $BASE_IMAGE
 

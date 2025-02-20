@@ -1,3 +1,16 @@
+# Available OpenJDK images from Red Hat Registry:
+# UBI 8 based images:
+# - registry.access.redhat.com/ubi8/openjdk-8
+# - registry.access.redhat.com/ubi8/openjdk-11
+# - registry.access.redhat.com/ubi8/openjdk-17
+# - registry.access.redhat.com/ubi8/openjdk-21
+#
+# UBI 9 based images:
+# - registry.access.redhat.com/ubi9/openjdk-8
+# - registry.access.redhat.com/ubi9/openjdk-11
+# - registry.access.redhat.com/ubi9/openjdk-17
+# - registry.access.redhat.com/ubi9/openjdk-21
+
 ARG BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-17
 FROM $BASE_IMAGE
 
