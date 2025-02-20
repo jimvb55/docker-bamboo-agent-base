@@ -39,7 +39,60 @@ Run an Agent:
 
 **Success**. The Bamboo remote agent is now available to be approved in your Bamboo administration.
 
+# Building Custom JDK Images
+
+This repository provides support for building Bamboo agent images with different JDK versions using either Eclipse Temurin or Red Hat UBI base images.
+
+## Clone the Repository
+
+```bash
+git clone https://github.com/jimvb55/docker-bamboo-agent-base.git
+cd docker-bamboo-agent-base
+```
+
+## Building with Eclipse Temurin Base Images
+
+The `Dockerfile` supports various Eclipse Temurin OpenJDK versions. Use the `BASE_IMAGE` build argument to specify the desired version:
+
+```bash
+# For JDK 8
+docker build --build-arg BASE_IMAGE=eclipse-temurin:8-noble .
+
+# For JDK 11
+docker build --build-arg BASE_IMAGE=eclipse-temurin:11-noble .
+
+# For JDK 17
+docker build --build-arg BASE_IMAGE=eclipse-temurin:17-noble .
+
+# For JDK 21
+docker build --build-arg BASE_IMAGE=eclipse-temurin:21-noble .
+```
+
+Alternative base distributions are also available:
+- Ubuntu 22.04 (Jammy): Replace `noble` with `jammy`
+- Debian 12 (Bookworm): Replace `noble` with `bookworm`
+
+## Building with Red Hat UBI Base Images
+
+The `Dockerfile.ubi` provides support for Red Hat Universal Base Image (UBI) with OpenJDK. Use the `-f` flag to specify this Dockerfile and the `BASE_IMAGE` argument to choose the JDK version:
+
+```bash
+# For JDK 8
+docker build -f Dockerfile.ubi --build-arg BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-8 .
+
+# For JDK 11
+docker build -f Dockerfile.ubi --build-arg BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-11 .
+
+# For JDK 17
+docker build -f Dockerfile.ubi --build-arg BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-17 .
+
+# For JDK 21
+docker build -f Dockerfile.ubi --build-arg BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-21 .
+```
+
+UBI 8 based images are also available:
+- Replace `ubi9` with `ubi8` in the image name to use UBI 8 based images
+
 # Advanced Usage
 For advanced usage, e.g. configuration, troubleshooting, supportability, etc.,
 please check the [**Full Documentation**](https://atlassian.github.io/data-center-helm-charts/containers/BAMBOO-AGENT/).
-
