@@ -1,60 +1,85 @@
+<div align="center">
+
+# 🎋 Bamboo Agent Base
+
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat&logo=docker&logoColor=white)](https://hub.docker.com/r/atlassian/bamboo-agent-base)
+[![Bamboo](https://img.shields.io/badge/Bamboo-10.2.1-0052CC?style=flat&logo=bamboo&logoColor=white)](https://www.atlassian.com/software/bamboo)
+
+*A flexible and powerful Docker-based build agent for Atlassian Bamboo*
+
+</div>
+
+---
+
 A Bamboo Agent is a service that can run job builds. Each agent has a defined set of capabilities and can run builds only for jobs whose requirements match the agent's capabilities.
 To learn more about Bamboo, see: https://www.atlassian.com/software/bamboo
 
-If you are looking for **Bamboo Server Docker Image** it can be found [here](https://hub.docker.com/r/atlassian/bamboo/).
+> 🔍 Looking for the **Bamboo Server Docker Image**? Find it [here](https://hub.docker.com/r/atlassian/bamboo/).
 
-# Overview
+# 📋 Overview
 
-Based on: git clone --recursive https://bitbucket.org/atlassian-docker/docker-bamboo-agent-base.git
+Based on: `git clone --recursive https://github.com/jimvb55/docker-bamboo-agent-base.git`
 
-This Docker container repo makes it easy(ish) to get a Bamboo Remote Agent up and running. It is intended to be used as a base to build from, and as such
-contains limited built-in capabilities:
+This Docker container repo makes it easy to get a Bamboo Remote Agent up and running. It is intended to be used as a base to build from, and comes with the following capabilities:
 
-* JDK 11, JDK 17 (from v9.4.0), JDK 21 (from v10.1.0)
-* Git & Git LFS
-* Maven 3
-* Python 3
+| Category | Tools & Versions |
+|----------|-----------------|
+| ☕ Java | JDK 11, JDK 17 (v9.4.0+), JDK 21 (v10.1.0+) |
+| 🔧 Build Tools | Maven 3 |
+| 📦 Version Control | Git & Git LFS |
+| 🐍 Scripting | Python 3 |
 
-Using this image as a base, you can create a custom remote agent image with your
-desired build tools installed. Note that Bamboo Agent Docker Image does not
-include a Bamboo server.
+Using this image as a base, you can create a custom remote agent image with your desired build tools installed.
 
-# Quick Start (pulls image from atlassion)
+> ⚠️ Note: Bamboo Agent Docker Image does not include a Bamboo server.
 
-For the `BAMBOO_AGENT_HOME` directory that is used to store the repository data (amongst other things) we recommend mounting a host directory as a [data volume](https://docs.docker.com/engine/tutorials/dockervolumes/#/data-volumes), or via a named volume.
+# 🚀 Quick Start
 
-To get started you can use a data volume, or named volumes. In this example we'll use named volumes.
+**Pulls image direct from Atlassian JDK21 - no build required**
 
-Run an Agent:
+For the `BAMBOO_AGENT_HOME` directory that is used to store the repository data, we recommend mounting a host directory as a [data volume](https://docs.docker.com/engine/tutorials/dockervolumes/#/data-volumes), or via a named volume.
 
-    $> docker volume create --name bambooAgentVolume
-    $> docker run -e BAMBOO_SERVER=http://bamboo.mycompany.com/agentServer/ -v bambooAgentVolume:/var/atlassian/application-data/bamboo-agent --name="bambooAgent" --hostname="bambooAgent" -d atlassian/bamboo-agent-base
+<details>
+<summary>📝 Run an Agent with Named Volume</summary>
 
-**Success**. The Bamboo remote agent is now available to be approved in your Bamboo administration.
+```bash
+# Create a volume for agent data
+docker volume create --name bambooAgentVolume
 
-**Use docker version >= 20.10.9.**
+# Run the agent
+docker run -e BAMBOO_SERVER=http://bamboo.mycompany.com/agentServer/ \
+          -v bambooAgentVolume:/var/atlassian/application-data/bamboo-agent \
+          --name="bambooAgent" \
+          --hostname="bambooAgent" \
+          -d atlassian/bamboo-agent-base
+```
 
-# Building Custom JDK Images
+</details>
 
-This repository provides support for building Bamboo agent images with different JDK versions using either Eclipse Temurin or Red Hat UBI base images.
+> ✅ **Success**: The Bamboo remote agent is now available to be approved in your Bamboo administration.
 
-# Available Ubuntu base versions
-This image is based on [Eclipse Temurin](https://hub.docker.com/_/eclipse-temurin) and ships with Ubuntu 24.04 (Noble).
-For users requiring the earlier Ubuntu Jammy (22.04) version, the `jdk11-jammy` and `jdk17-jammy` tags are available.
+**Requirements**: Docker version >= 20.10.9
 
-**Note:** The `-jammy` tags are not maintained and are provided solely for compatibility and migration purposes. 
-It is strongly recommended to use the latest `jdk11`, `jdk17`, `jdk21` tags in production environments to ensure you receive the latest updates and security patches.
+# 🛠️ Building Custom Agent Images
 
-## Clone the Repository
+This repository provides support for building specialized Bamboo agent images. Choose your preferred stack:
+
+## 🔨 Getting Started
 
 ```bash
 git clone --recursive https://github.com/jimvb55/docker-bamboo-agent-base.git
 cd docker-bamboo-agent-base
 ```
 
-## Building with Eclipse Temurin Base Images
+## ☕ Java/Maven Agent Images
 
-The `Dockerfile` supports various Eclipse Temurin OpenJDK versions. Use the `BASE_IMAGE` build argument to specify the desired version:
+### Base Image Options
+
+<details>
+<summary>🏗️ Eclipse Temurin Base Images</summary>
+
+The `Dockerfile` supports various Eclipse Temurin OpenJDK versions:
 
 ```bash
 # For JDK 8
@@ -70,13 +95,17 @@ docker build --build-arg BAMBOO_VERSION=10.2.1 --build-arg BASE_IMAGE=eclipse-te
 docker build --build-arg BAMBOO_VERSION=10.2.1 --build-arg BASE_IMAGE=eclipse-temurin:21-noble .
 ```
 
-Alternative base distributions are also available:
-- Ubuntu 22.04 (Jammy): Replace `noble` with `jammy`
-- Debian 12 (Bookworm): Replace `noble` with `bookworm`
+**Available Distributions**:
+- 🌟 Ubuntu 24.04 (Noble) - Default
+- 🔄 Ubuntu 22.04 (Jammy) - Replace `noble` with `jammy`
+- 📦 Debian 12 (Bookworm) - Replace `noble` with `bookworm`
 
-## Building with Red Hat UBI Base Images
+</details>
 
-The `Dockerfile.ubi` provides support for Red Hat Universal Base Image (UBI) with OpenJDK. Use the `-f` flag to specify this Dockerfile and the `BASE_IMAGE` argument to choose the JDK version:
+<details>
+<summary>🏢 Red Hat UBI Base Images</summary>
+
+The `Dockerfile.ubi` provides support for Red Hat Universal Base Image (UBI) with OpenJDK:
 
 ```bash
 # For JDK 8
@@ -92,21 +121,30 @@ docker build -f Dockerfile.ubi --build-arg BAMBOO_VERSION=10.2.1 --build-arg BAS
 docker build -f Dockerfile.ubi --build-arg BAMBOO_VERSION=10.2.1 --build-arg BASE_IMAGE=registry.access.redhat.com/ubi9/openjdk-21 .
 ```
 
-UBI 8 based images are also available:
-- Replace `ubi9` with `ubi8` in the image name to use UBI 8 based images
+**Available UBI Versions**:
+- 🌟 UBI 9 (Default)
+- 🔄 UBI 8 - Replace `ubi9` with `ubi8` in the image name
 
-# Building Node.js/NPM Agent Images
+</details>
 
-The `Dockerfile.node` provides support for Node.js-based build environments with NPM and Yarn package managers. The image is based on the official Node.js Docker images and includes:
+## 📦 Node.js/NPM Agent Images
 
-- Node.js 20 LTS (or Node.js 18 LTS)
-- NPM (latest version)
-- Yarn package manager
-- Build essentials for native module compilation
-- Git & Git LFS
-- Python 3
+The `Dockerfile.node` provides a modern Node.js development environment:
 
-## Building with Node.js Base Images
+### Features
+
+| Category | Components |
+|----------|------------|
+| 🟩 Runtime | Node.js 20/18 LTS |
+| 📦 Package Managers | NPM (latest), Yarn |
+| 🛠️ Build Tools | build-essential |
+| 🔧 Version Control | Git & Git LFS |
+| 🐍 Scripting | Python 3 |
+
+### Building Node.js Images
+
+<details>
+<summary>🏗️ Available Node.js Versions</summary>
 
 ```bash
 # For Node.js 20 LTS (Debian Bookworm)
@@ -116,9 +154,26 @@ docker build -f Dockerfile.node --build-arg BAMBOO_VERSION=10.2.1 --build-arg BA
 docker build -f Dockerfile.node --build-arg BAMBOO_VERSION=10.2.1 --build-arg BASE_IMAGE=node:18-bookworm -t bamboo-agent-node .
 ```
 
-Alternative base distributions are also available:
-- Ubuntu 22.04 (Jammy): Replace `bookworm` with `jammy`
+**Available Distributions**:
+- 📦 Debian 12 (Bookworm) - Default
+- 🔄 Ubuntu 22.04 (Jammy) - Replace `bookworm` with `jammy`
 
-# Advanced Usage
-For advanced usage, e.g. configuration, troubleshooting, supportability, etc.,
-please check the [**Full Documentation**](https://atlassian.github.io/data-center-helm-charts/containers/BAMBOO-AGENT/).
+</details>
+
+# 📚 Advanced Usage
+
+For advanced usage, including:
+- 🔧 Configuration
+- 🔍 Troubleshooting
+- 🛡️ Security
+- 📊 Monitoring
+
+Please check the [**Full Documentation**](https://atlassian.github.io/data-center-helm-charts/containers/BAMBOO-AGENT/).
+
+---
+
+<div align="center">
+
+Made with ❤️ for the Bamboo community
+
+</div>
