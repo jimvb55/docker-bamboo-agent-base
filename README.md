@@ -182,6 +182,6 @@ Please check the [**Full Documentation**](https://atlassian.github.io/data-cente
 
 <div align="center">
 
-Made with ❤️ for the Bamboo community and customized for valpak
+🐳🐳
 
 </div>
