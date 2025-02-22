@@ -19,7 +19,7 @@ To learn more about Bamboo, see: https://www.atlassian.com/software/bamboo
 
 # 📋 Overview
 
-Based on: `git clone --recursive https://github.com/jimvb55/docker-bamboo-agent-base.git`
+Based on repo: `git clone --recursive https://bitbucket.org/atlassian-docker/docker-bamboo-agent-base.git`
 
 This Docker container repo makes it easy to get a Bamboo Remote Agent up and running. It is intended to be used as a base to build from, and comes with the following capabilities:
 
