@@ -74,6 +74,14 @@ cd docker-bamboo-agent-base
 
 ## ☕ Java/Maven Agent Images
 
+### Features
+| Category | Tools & Versions |
+|----------|-----------------|
+| ☕ Java | JDK 11, JDK 17 (v9.4.0+), JDK 21 (v10.1.0+) |
+| 🔧 Build Tools | Maven 3 |
+| 📦 Version Control | Git & Git LFS |
+| 🐍 Scripting | Python 3 |
+
 ### Base Image Options
 
 <details>
@@ -174,6 +182,6 @@ Please check the [**Full Documentation**](https://atlassian.github.io/data-cente
 
 <div align="center">
 
-Made with ❤️ for the Bamboo community
+Made with ❤️ for the Bamboo community and customized for valpak
 
 </div>
