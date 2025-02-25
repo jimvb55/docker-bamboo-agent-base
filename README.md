@@ -29,7 +29,7 @@ This Docker container repo makes it easy to get a Bamboo Remote Agent up and run
 
 | Category | Tools & Versions |
 |----------|-----------------|
-| ☕ Java | JDK 11, JDK 17 (v9.4.0+), JDK 21 (v10.1.0+) |
+| ☕ Java | JDK 21 (v10.1.0+) |
 | 🔧 Build Tools | Maven 3 |
 | 📦 Version Control | Git & Git LFS |
 | 🐍 Scripting | Python 3 |
