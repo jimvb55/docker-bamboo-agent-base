@@ -56,11 +56,11 @@ RUN apt-get update \
     && apt-get clean autoclean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
 # Install Octopus Deploy CLI
-RUN curl -L https://octopus.com/downloads/latest/Linux_x64/OctopusCLI.tgz -o /tmp/OctopusCLI.tgz \
+RUN curl -L https://github.com/OctopusDeploy/OctopusCLI/releases/download/v9.1.7/OctopusTools.9.1.7.linux-x64.tar.gz -o /tmp/OctopusCLI.tar.gz \
     && mkdir -p /opt/octopus \
-    && tar xzf /tmp/OctopusCLI.tgz -C /opt/octopus \
-    && ln -s /opt/octopus/octopus /usr/local/bin/octopus \
-    && rm /tmp/OctopusCLI.tgz
+    && tar xzf /tmp/OctopusCLI.tar.gz -C /opt/octopus \
+    && ln -s /opt/octopus/octo /usr/local/bin/octo \
+    && rm /tmp/OctopusCLI.tar.gz
 
 ARG BAMBOO_VERSION
 ENV BAMBOO_VERSION                          ${BAMBOO_VERSION}
@@ -85,7 +85,7 @@ RUN groupadd --gid ${RUN_GID} ${RUN_GROUP} \
     \
     && /bamboo-update-capability.sh "dotnet" $(dotnet --version) \
     && /bamboo-update-capability.sh ".NET Core" $(dotnet --version) \
-    && /bamboo-update-capability.sh "Octopus CLI" $(octopus --version) \
+    && /bamboo-update-capability.sh "Octopus CLI" $(octo --version) \
     && /bamboo-update-capability.sh "Python" /usr/bin/python3 \
     && /bamboo-update-capability.sh "Python 3" /usr/bin/python3 \
     && /bamboo-update-capability.sh "Git" /usr/bin/git \
