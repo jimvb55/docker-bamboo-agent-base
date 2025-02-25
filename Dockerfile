@@ -21,8 +21,8 @@
 ARG BASE_IMAGE=eclipse-temurin:17-noble
 FROM $BASE_IMAGE
 
-LABEL maintainer="dc-deployments@atlassian.com"
-LABEL securitytxt="https://www.atlassian.com/.well-known/security.txt"
+# LABEL maintainer="dc-deployments@atlassian.com"
+# LABEL securitytxt="https://www.atlassian.com/.well-known/security.txt"
 
 ENV APP_NAME                                bamboo_agent
 ENV RUN_USER                                bamboo
