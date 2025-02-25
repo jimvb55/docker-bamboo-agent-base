@@ -168,6 +168,39 @@ docker build -f Dockerfile.node --build-arg BAMBOO_VERSION=10.2.1 --build-arg BA
 
 </details>
 
+## 🔷 .NET Agent Images
+
+The `Dockerfile.dotnet` provides a comprehensive .NET development environment:
+
+### Features
+
+| Category | Components |
+|----------|------------|
+| 🔷 Runtime | .NET SDK 8.0/6.0 LTS |
+| 🐙 Deployment | Octopus Deploy CLI |
+| 🛠️ Build Tools | build-essential |
+| 🔧 Version Control | Git & Git LFS |
+| 🐍 Scripting | Python 3 |
+
+### Building .NET Images
+
+<details>
+<summary>🏗️ Available .NET SDK Versions</summary>
+
+```bash
+# For .NET 8.0 LTS (Debian Bookworm)
+docker build -f Dockerfile.dotnet --build-arg BAMBOO_VERSION=10.2.1 --build-arg BASE_IMAGE=mcr.microsoft.com/dotnet/sdk:8.0-bookworm-slim -t bamboo-agent-dotnet .
+
+# For .NET 6.0 LTS (Debian Bookworm)
+docker build -f Dockerfile.dotnet --build-arg BAMBOO_VERSION=10.2.1 --build-arg BASE_IMAGE=mcr.microsoft.com/dotnet/sdk:6.0-bookworm-slim -t bamboo-agent-dotnet .
+```
+
+**Available Distributions**:
+- 📦 Debian 12 (Bookworm) - Default
+- 🔄 Ubuntu 22.04 (Jammy) - Replace `bookworm` with `jammy`
+
+</details>
+
 # 📚 Advanced Usage
 
 For advanced usage, including:
