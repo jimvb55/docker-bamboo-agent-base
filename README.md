@@ -21,6 +21,10 @@ To learn more about Bamboo, see: https://www.atlassian.com/software/bamboo
 
 Based on repo: `git clone --recursive https://bitbucket.org/atlassian-docker/docker-bamboo-agent-base.git`
 
+> ⚠️ Note: Bamboo Agent Docker Image does not include a Bamboo server.
+
+# 🚀 Quick Start
+
 This Docker container repo makes it easy to get a Bamboo Remote Agent up and running. It is intended to be used as a base to build from, and comes with the following capabilities:
 
 | Category | Tools & Versions |
@@ -31,10 +35,6 @@ This Docker container repo makes it easy to get a Bamboo Remote Agent up and run
 | 🐍 Scripting | Python 3 |
 
 Using this image as a base, you can create a custom remote agent image with your desired build tools installed.
-
-> ⚠️ Note: Bamboo Agent Docker Image does not include a Bamboo server.
-
-# 🚀 Quick Start
 
 **Pulls image direct from Atlassian JDK21 - no build required**
 
