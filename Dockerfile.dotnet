@@ -33,6 +33,9 @@ ENV DISABLE_AGENT_AUTO_CAPABILITY_DETECTION false
 ENV DOTNET_ROOT                             /usr/share/dotnet
 ENV PATH                                    $DOTNET_ROOT:$PATH
 
+# JAVA_HOME is required by the Bamboo Agent
+ENV JAVA_HOME                               /usr/lib/jvm/default-java
+
 WORKDIR $BAMBOO_AGENT_HOME
 
 COPY entrypoint.py \
