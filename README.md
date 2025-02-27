@@ -201,6 +201,41 @@ docker build -f Dockerfile.dotnet --build-arg BAMBOO_VERSION=10.2.1 --build-arg 
 
 </details>
 
+## 🔄 Multi-capability (Java + .NET) Agent Images
+
+The `Dockerfile.multi` provides a comprehensive development environment with both Java and .NET capabilities:
+
+### Features
+
+| Category | Components |
+|----------|------------|
+| ☕ Java | JDK (from base image) |
+| 🔧 Build Tools | Maven 3 |
+| 🔷 .NET | .NET SDK 8.0 LTS |
+| 🐙 Deployment | Octopus Deploy CLI |
+| 🛠️ Build Tools | build-essential |
+| 🔧 Version Control | Git & Git LFS |
+| 🐍 Scripting | Python 3 |
+
+### Building Multi-capability Images
+
+<details>
+<summary>🏗️ Available Java + .NET Configurations</summary>
+
+```bash
+# For JDK 17 + .NET 8.0 (Ubuntu Noble)
+docker build -f Dockerfile.multi --build-arg BAMBOO_VERSION=10.2.1 --build-arg BASE_IMAGE=eclipse-temurin:17-noble -t bamboo-agent-multi .
+
+# For JDK 21 + .NET 8.0 (Ubuntu Noble)
+docker build -f Dockerfile.multi --build-arg BAMBOO_VERSION=10.2.1 --build-arg BASE_IMAGE=eclipse-temurin:21-noble -t bamboo-agent-multi .
+```
+
+**Available Base Images**:
+- All Eclipse Temurin OpenJDK images supported by the standard Java agent can be used as the base image
+- The multi-capability agent will install .NET SDK 8.0 on top of the Java base image
+
+</details>
+
 # 📚 Advanced Usage
 
 For advanced usage, including:

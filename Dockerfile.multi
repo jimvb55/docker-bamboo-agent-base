@@ -1,17 +1,32 @@
+# Multi-capability Bamboo Agent with Java and .NET support
+#
+# This Dockerfile creates a Bamboo agent with both Java and .NET capabilities.
+# It is based on the Java agent Dockerfile and adds .NET SDK and tools.
+#
 # Build command:
-# docker build -f Dockerfile.dotnet --build-arg BAMBOO_VERSION=10.2.1 -t bamboo-agent-dotnet .
+# docker build -f Dockerfile.multi --build-arg BAMBOO_VERSION=10.2.1 --build-arg BASE_IMAGE=eclipse-temurin:17-noble -t bamboo-agent-multi .
 #
-# .NET SDK LTS versions available:
+# Available Eclipse Temurin OpenJDK images:
 #
-# Debian 12 (Bookworm) based images:
-# - mcr.microsoft.com/dotnet/sdk:6.0-bookworm-slim
-# - mcr.microsoft.com/dotnet/sdk:8.0-bookworm-slim
+# Ubuntu 24.04 (Noble) based images:
+# - eclipse-temurin:8-noble
+# - eclipse-temurin:11-noble
+# - eclipse-temurin:17-noble
+# - eclipse-temurin:21-noble
 #
 # Ubuntu 22.04 (Jammy) based images:
-# - mcr.microsoft.com/dotnet/sdk:6.0-jammy
-# - mcr.microsoft.com/dotnet/sdk:8.0-jammy
+# - eclipse-temurin:8-jammy
+# - eclipse-temurin:11-jammy
+# - eclipse-temurin:17-jammy
+# - eclipse-temurin:21-jammy
+#
+# Debian 12 (Bookworm) based images:
+# - eclipse-temurin:8-bookworm
+# - eclipse-temurin:11-bookworm
+# - eclipse-temurin:17-bookworm
+# - eclipse-temurin:21-bookworm
 
-ARG BASE_IMAGE=mcr.microsoft.com/dotnet/sdk:8.0-bookworm-slim
+ARG BASE_IMAGE=eclipse-temurin:17-noble
 FROM $BASE_IMAGE
 
 # LABEL maintainer="dc-deployments@atlassian.com"
@@ -33,9 +48,6 @@ ENV DISABLE_AGENT_AUTO_CAPABILITY_DETECTION false
 ENV DOTNET_ROOT                             /usr/share/dotnet
 ENV PATH                                    $DOTNET_ROOT:$PATH
 
-# JAVA_HOME is required by the Bamboo Agent
-ENV JAVA_HOME                               /usr/lib/jvm/default-java
-
 WORKDIR $BAMBOO_AGENT_HOME
 
 COPY entrypoint.py \
@@ -47,6 +59,7 @@ COPY entrypoint.py \
 COPY shared-components/support                      /opt/atlassian/support
 COPY config/*                                       /opt/atlassian/etc/
 
+# Install common dependencies and tools
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
@@ -54,14 +67,27 @@ RUN apt-get update \
          openssh-client \
          python3 python3-jinja2 python-is-python3 \
          build-essential \
-         default-jdk \
          curl \
+         wget \
          tini \
-    && apt-get clean autoclean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/* \
-    && update-alternatives --display java | grep "link currently points to" | grep -o "/.*$" > /tmp/java_path \
-    && export JAVA_BIN_PATH=$(cat /tmp/java_path) \
-    && export JAVA_HOME=$(dirname $(dirname $JAVA_BIN_PATH)) \
-    && echo "export JAVA_HOME=$JAVA_HOME" >> /etc/environment
+    && apt-get clean autoclean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
+
+# Install Maven
+ARG MAVEN_VERSION=3.9.9
+ENV MAVEN_HOME                              /opt/maven
+RUN mkdir -p ${MAVEN_HOME} \
+    && curl -L --silent https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz | tar -xz --strip-components=1 -C "${MAVEN_HOME}" \
+    && ln -s ${MAVEN_HOME}/bin/mvn /usr/local/bin/mvn
+
+# Install .NET SDK
+RUN wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O packages-microsoft-prod.deb \
+    && dpkg -i packages-microsoft-prod.deb \
+    && rm packages-microsoft-prod.deb \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends apt-transport-https \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends dotnet-sdk-8.0 \
+    && apt-get clean autoclean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
 # Install Octopus Deploy CLI
 RUN curl -L https://github.com/OctopusDeploy/OctopusCLI/releases/download/v9.1.7/OctopusTools.9.1.7.linux-x64.tar.gz -o /tmp/OctopusCLI.tar.gz \
@@ -92,14 +118,14 @@ RUN groupadd --gid ${RUN_GID} ${RUN_GROUP} \
     && mkdir -p                             ${BAMBOO_AGENT_HOME}/conf ${BAMBOO_AGENT_HOME}/bin \
     \
     # Register Java capabilities
-    && java -version 2>&1 | head -n 1 | cut -d'"' -f2 > /tmp/java_version \
-    && export JAVA_VERSION=$(cat /tmp/java_version) \
-    && export JAVA_MAJOR_VERSION=$(echo $JAVA_VERSION | cut -d'.' -f1) \
-    && export JAVA_MINOR_VERSION=$(echo $JAVA_VERSION | cut -d'.' -f2) \
+    && export TEMP_VERSION=${JAVA_VERSION#*-} && export JAVA_MAJOR_VERSION=${TEMP_VERSION%%.*} \
+    && export TEMP_VERSION=${TEMP_VERSION#*.} && JAVA_MINOR_VERSION=${TEMP_VERSION%%.*} \
     && /bamboo-update-capability.sh "JDK" ${JAVA_HOME}/bin/java \
     && /bamboo-update-capability.sh "system.jdk.JDK ${JAVA_MAJOR_VERSION}" ${JAVA_HOME}/bin/java \
     && /bamboo-update-capability.sh "system.jdk.JDK ${JAVA_MAJOR_VERSION}.${JAVA_MINOR_VERSION}" ${JAVA_HOME}/bin/java \
     && /bamboo-update-capability.sh "JDK ${JAVA_VERSION}" ${JAVA_HOME}/bin/java \
+    && /bamboo-update-capability.sh "Maven" /usr/local/bin/mvn \
+    && /bamboo-update-capability.sh "Maven 3" /usr/local/bin/mvn \
     \
     # Register .NET capabilities
     && /bamboo-update-capability.sh "dotnet" $(dotnet --version) \
