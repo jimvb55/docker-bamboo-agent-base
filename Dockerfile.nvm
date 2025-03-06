@@ -1,0 +1,143 @@
+# Build command:
+# docker build -f Dockerfile.nvm --build-arg BAMBOO_VERSION=10.2.1 -t bamboo-agent-nvm .
+#
+# This Dockerfile uses nvm (Node Version Manager) to manage multiple Node.js versions
+# within a single image. This allows for greater flexibility when running builds that
+# require different Node.js versions without needing separate Docker images.
+
+ARG BASE_IMAGE=debian:bookworm-slim
+FROM $BASE_IMAGE
+
+# LABEL maintainer="dc-deployments@atlassian.com"
+# LABEL securitytxt="https://www.atlassian.com/.well-known/security.txt"
+
+ENV APP_NAME                                bamboo_agent
+ENV RUN_USER                                bamboo
+ENV RUN_GROUP                               bamboo
+ENV RUN_UID                                 1002
+ENV RUN_GID                                 1002
+
+ENV BAMBOO_AGENT_HOME                       /var/atlassian/application-data/bamboo-agent
+ENV BAMBOO_AGENT_INSTALL_DIR                /opt/atlassian/bamboo
+ENV KUBE_NUM_EXTRA_CONTAINERS               0
+ENV EXTRA_CONTAINERS_REGISTRATION_DIRECTORY /pbc/kube
+ENV DISABLE_AGENT_AUTO_CAPABILITY_DETECTION false
+
+# NVM configuration
+ENV NVM_DIR                                 /usr/local/nvm
+ENV NVM_VERSION                             0.39.7
+# Default Node.js version (can be overridden at runtime)
+ENV DEFAULT_NODE_VERSION                    20
+# Space-separated list of Node.js versions to install
+ENV NODE_VERSIONS                           "18 20"
+# Add NVM to PATH
+ENV PATH                                    $NVM_DIR/versions/node/v$DEFAULT_NODE_VERSION/bin:$PATH
+
+WORKDIR $BAMBOO_AGENT_HOME
+
+COPY entrypoint.py \
+     probe-common.sh \
+     probe-startup.sh \
+     probe-readiness.sh \
+     pre-launch.sh \
+     shared-components/image/entrypoint_helpers.py  /
+COPY shared-components/support                      /opt/atlassian/support
+COPY config/*                                       /opt/atlassian/etc/
+
+# Install base dependencies
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends \
+         git git-lfs \
+         openssh-client \
+         python3 python3-jinja2 python-is-python3 \
+         build-essential \
+         default-jdk \
+         tini \
+         curl \
+         ca-certificates \
+         gnupg \
+    && apt-get clean autoclean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
+
+# Install NVM and Node.js versions
+RUN mkdir -p $NVM_DIR \
+    && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v${NVM_VERSION}/install.sh | bash \
+    && . $NVM_DIR/nvm.sh \
+    && for version in $NODE_VERSIONS; do \
+         echo "Installing Node.js v$version" \
+         && nvm install $version; \
+       done \
+    && nvm alias default $DEFAULT_NODE_VERSION \
+    && nvm use default \
+    # Install common global npm packages for each Node.js version
+    && for version in $NODE_VERSIONS; do \
+         echo "Setting up npm for Node.js v$version" \
+         && nvm use $version \
+         && npm install -g npm@latest \
+         && npm install -g yarn; \
+       done \
+    && nvm use default \
+    && npm cache clean --force
+
+# Add NVM to shell initialization files
+RUN echo 'export NVM_DIR="$NVM_DIR"' >> /etc/profile.d/nvm.sh \
+    && echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm' >> /etc/profile.d/nvm.sh \
+    && echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion' >> /etc/profile.d/nvm.sh \
+    && echo 'export NVM_DIR="$NVM_DIR"' >> /etc/bash.bashrc \
+    && echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm' >> /etc/bash.bashrc \
+    && echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion' >> /etc/bash.bashrc
+
+ARG BAMBOO_VERSION
+ENV BAMBOO_VERSION                          ${BAMBOO_VERSION}
+ARG DOWNLOAD_URL=https://packages.atlassian.com/mvn/maven-atlassian-external/com/atlassian/bamboo/atlassian-bamboo-agent-installer/${BAMBOO_VERSION}/atlassian-bamboo-agent-installer-${BAMBOO_VERSION}.jar
+ARG DOWNLOAD_USERNAME
+ARG DOWNLOAD_PASSWORD
+
+COPY bamboo-update-capability.sh /
+RUN groupadd --gid ${RUN_GID} ${RUN_GROUP} \
+    && useradd --uid ${RUN_UID} --gid ${RUN_GID} --home-dir ${BAMBOO_AGENT_HOME} --shell /bin/bash ${RUN_USER} \
+    && echo PATH=$PATH > /etc/environment \
+    \
+    && mkdir -p                             ${BAMBOO_AGENT_INSTALL_DIR} \
+    && chown -R ${RUN_USER}:root            ${BAMBOO_AGENT_INSTALL_DIR} \
+    && if [ -n "${DOWNLOAD_USERNAME}" ] && [ -n "${DOWNLOAD_PASSWORD}" ]; then \
+        curl -u ${DOWNLOAD_USERNAME}:${DOWNLOAD_PASSWORD} -L --silent ${DOWNLOAD_URL} -o "${BAMBOO_AGENT_INSTALL_DIR}/atlassian-bamboo-agent-installer.jar"; \
+    else \
+        curl -L --silent ${DOWNLOAD_URL} -o "${BAMBOO_AGENT_INSTALL_DIR}/atlassian-bamboo-agent-installer.jar"; \
+    fi \
+    && jar -tf                              "${BAMBOO_AGENT_INSTALL_DIR}/atlassian-bamboo-agent-installer.jar" \
+    && mkdir -p                             ${BAMBOO_AGENT_HOME}/conf ${BAMBOO_AGENT_HOME}/bin \
+    \
+    # Register all installed Node.js versions as capabilities
+    && . $NVM_DIR/nvm.sh \
+    && for version in $NODE_VERSIONS; do \
+         nvm use $version \
+         && node_path="$NVM_DIR/versions/node/v$(node --version | cut -c 2-)/bin/node" \
+         && /bamboo-update-capability.sh "Node.js $(node --version)" "$node_path" \
+         && npm_path="$NVM_DIR/versions/node/v$(node --version | cut -c 2-)/bin/npm" \
+         && /bamboo-update-capability.sh "NPM $(npm --version)" "$npm_path" \
+         && yarn_path="$NVM_DIR/versions/node/v$(node --version | cut -c 2-)/bin/yarn" \
+         && /bamboo-update-capability.sh "Yarn $(yarn --version)" "$yarn_path"; \
+       done \
+    # Set default Node.js version
+    && nvm use default \
+    # Register default versions as the primary capabilities
+    && /bamboo-update-capability.sh "Node.js" "$NVM_DIR/versions/node/v$(node --version | cut -c 2-)/bin/node" \
+    && /bamboo-update-capability.sh "NPM" "$NVM_DIR/versions/node/v$(node --version | cut -c 2-)/bin/npm" \
+    && /bamboo-update-capability.sh "Yarn" "$NVM_DIR/versions/node/v$(node --version | cut -c 2-)/bin/yarn" \
+    # Register other capabilities
+    && /bamboo-update-capability.sh "Python" /usr/bin/python3 \
+    && /bamboo-update-capability.sh "Python 3" /usr/bin/python3 \
+    && /bamboo-update-capability.sh "Git" /usr/bin/git \
+    && chown -R ${RUN_USER}:root ${BAMBOO_AGENT_HOME} \
+    && chmod -R 770 ${BAMBOO_AGENT_HOME} \
+    && for file in "/opt/atlassian/support /entrypoint.py /entrypoint_helpers.py /probe-common.sh /probe-startup.sh /probe-readiness.sh /pre-launch.sh /bamboo-update-capability.sh"; do \
+       chmod -R "u=rwX,g=rX,o=rX" ${file} && \
+       chown -R root ${file}; done
+
+# Copy and set up the Node.js version switching helper script
+COPY use-node.sh /usr/local/bin/use-node
+RUN chmod +x /usr/local/bin/use-node
+
+CMD ["/usr/bin/tini", "--", "/entrypoint.py"]
+ENTRYPOINT ["/pre-launch.sh"]
