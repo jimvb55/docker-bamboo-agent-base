@@ -106,12 +106,12 @@ RUN curl -fsSL https://nodejs.org/dist/v20.11.1/node-v20.11.1-linux-x64.tar.gz \
 RUN curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --install-dir ${APP_DIR}/dotnet/8 --channel 8.0 --no-path \
     && ln -s ${APP_DIR}/dotnet/8/dotnet /usr/local/bin/dotnet
 
-# Install Octopus CLI
-RUN curl -sSL "https://github.com/OctopusDeploy/cli/releases/download/v2.15.5/octopus-cli_2.15.5_linux_amd64.rpm" \
-    -o /tmp/octopus-cli.rpm \
-    && microdnf install -y /tmp/octopus-cli.rpm \
-    && rm -f /tmp/octopus-cli.rpm \
-    && ln -sf /usr/bin/octopus /usr/local/bin/octopus
+# Install Octopus Deploy CLI
+RUN curl -L https://github.com/OctopusDeploy/OctopusCLI/releases/download/v9.1.7/OctopusTools.9.1.7.linux-x64.tar.gz -o /tmp/OctopusCLI.tar.gz \
+    && mkdir -p /opt/octopus \
+    && tar xzf /tmp/OctopusCLI.tar.gz -C /opt/octopus \
+    && ln -s /opt/octopus/octo /usr/local/bin/octo \
+    && rm /tmp/OctopusCLI.tar.gz
 
 ARG BAMBOO_VERSION
 ENV BAMBOO_VERSION                          ${BAMBOO_VERSION}
@@ -147,7 +147,7 @@ RUN /bamboo-update-capability.sh "JDK" ${APP_DIR}/java/21/bin/java \
     && /bamboo-update-capability.sh "Python" /usr/bin/python3 \
     && /bamboo-update-capability.sh "Python 3" /usr/bin/python3 \
     && /bamboo-update-capability.sh "Git" /usr/bin/git \
-    && /bamboo-update-capability.sh "octopusCLI" /usr/local/bin/octopus \
+    && /bamboo-update-capability.sh "Octopus CLI" /usr/local/bin/octo \
     && chown -R ${RUN_USER}:root ${BAMBOO_AGENT_HOME} \
     && chmod -R 770 ${BAMBOO_AGENT_HOME} \
     && for file in "/opt/atlassian/support /entrypoint.py /entrypoint_helpers.py /probe-common.sh /probe-startup.sh /probe-readiness.sh /pre-launch.sh /bamboo-update-capability.sh"; do \
