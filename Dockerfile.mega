@@ -51,7 +51,7 @@ RUN microdnf upgrade -y \
         procps-ng \
         util-linux \
         which \
-        curl \
+    #    curl \
         wget \
         tar \
         unzip \
