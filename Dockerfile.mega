@@ -101,13 +101,11 @@ RUN curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --install-d
     && ln -s ${APP_DIR}/dotnet/8/dotnet /usr/local/bin/dotnet
 
 # Install Octopus CLI
-RUN curl -sSL "https://github.com/OctopusDeploy/cli/releases/download/v2.0.0/octopus-cli_2.0.0_linux_amd64.tar.gz" \
-    -o /tmp/octopus-cli.tar.gz \
-    && mkdir -p /tmp/octopus \
-    && tar -xzf /tmp/octopus-cli.tar.gz -C /tmp/octopus \
-    && mv /tmp/octopus/octopus /usr/local/bin/ \
-    && chmod +x /usr/local/bin/octopus \
-    && rm -rf /tmp/octopus /tmp/octopus-cli.tar.gz
+RUN curl -sSL "https://github.com/OctopusDeploy/cli/releases/download/v2.15.5/octopus-cli_2.15.5_linux_amd64.rpm" \
+    -o /tmp/octopus-cli.rpm \
+    && dnf install -y /tmp/octopus-cli.rpm \
+    && rm -f /tmp/octopus-cli.rpm \
+    && ln -sf /usr/bin/octopus /usr/local/bin/octopus
 
 ARG BAMBOO_VERSION
 ENV BAMBOO_VERSION                          ${BAMBOO_VERSION}
