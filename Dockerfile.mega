@@ -35,7 +35,7 @@ COPY bamboo-update-capability.sh                    /
 # Install common dependencies
 USER root
 RUN dnf upgrade -y \
-    && dnf install -y \
+    && dnf install -y --allowerasing \
         git \
         git-lfs \
         openssh \
