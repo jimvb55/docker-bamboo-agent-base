@@ -1,6 +1,6 @@
 # Dockerfile.mega - Flexible Bamboo Agent with multiple build tools
-# Base image: Red Hat Universal Base Image (UBI) 9
-FROM registry.access.redhat.com/ubi9/ubi:latest
+# Base image: Red Hat Universal Base Image (UBI) 9 with OpenJDK 17
+FROM registry.access.redhat.com/ubi9/openjdk-17:latest
 
 # Environment variables
 ENV APP_NAME                                bamboo_agent
@@ -51,7 +51,6 @@ RUN dnf upgrade -y \
         unzip \
         ca-certificates \
         gnupg \
-        java-11-openjdk \
     && dnf clean all \
     && mkdir -p ${APP_DIR}/java/8 ${APP_DIR}/java/17 ${APP_DIR}/java/21 \
        ${APP_DIR}/node/18 ${APP_DIR}/node/20 \
