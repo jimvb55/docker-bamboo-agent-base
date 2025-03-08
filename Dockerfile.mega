@@ -34,8 +34,14 @@ COPY bamboo-update-capability.sh                    /
 
 # Install common dependencies
 USER root
-RUN dnf upgrade -y \
-    && dnf install -y --allowerasing \
+RUN microdnf upgrade -y \
+             --refresh \
+             --best \
+             --nodocs \
+             --noplugins \
+             --setopt=install_weak_deps=0 \
+    && microdnf update -y \
+    && microdnf install -y --setopt=install_weak_deps=0 \
         git \
         git-lfs \
         openssh \
@@ -51,7 +57,7 @@ RUN dnf upgrade -y \
         unzip \
         ca-certificates \
         gnupg \
-    && dnf clean all \
+    && microdnf clean all \
     && mkdir -p ${APP_DIR}/java/8 ${APP_DIR}/java/17 ${APP_DIR}/java/21 \
        ${APP_DIR}/node/18 ${APP_DIR}/node/20 \
        ${APP_DIR}/maven \
@@ -103,7 +109,7 @@ RUN curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --install-d
 # Install Octopus CLI
 RUN curl -sSL "https://github.com/OctopusDeploy/cli/releases/download/v2.15.5/octopus-cli_2.15.5_linux_amd64.rpm" \
     -o /tmp/octopus-cli.rpm \
-    && dnf install -y /tmp/octopus-cli.rpm \
+    && microdnf install -y /tmp/octopus-cli.rpm \
     && rm -f /tmp/octopus-cli.rpm \
     && ln -sf /usr/bin/octopus /usr/local/bin/octopus
 
