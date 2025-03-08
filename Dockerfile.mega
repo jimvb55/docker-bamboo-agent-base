@@ -1,0 +1,178 @@
+# Dockerfile.mega - Flexible Bamboo Agent with multiple build tools
+# Base image: Red Hat Universal Base Image (UBI) 9
+FROM registry.access.redhat.com/ubi9/ubi:latest
+
+# Environment variables
+ENV APP_NAME                                bamboo_agent
+ENV RUN_USER                                bamboo
+ENV RUN_GROUP                               bamboo
+ENV RUN_UID                                 1002
+ENV RUN_GID                                 1002
+
+ENV BAMBOO_AGENT_HOME                       /var/atlassian/application-data/bamboo-agent
+ENV BAMBOO_AGENT_INSTALL_DIR                /opt/atlassian/bamboo
+ENV KUBE_NUM_EXTRA_CONTAINERS               0
+ENV EXTRA_CONTAINERS_REGISTRATION_DIRECTORY /pbc/kube
+ENV DISABLE_AGENT_AUTO_CAPABILITY_DETECTION false
+
+# Create app directory for build tools
+ENV APP_DIR                                 /app
+
+# Create working directory
+WORKDIR $BAMBOO_AGENT_HOME
+
+# Copy required scripts
+COPY entrypoint.py \
+     probe-common.sh \
+     probe-startup.sh \
+     probe-readiness.sh \
+     pre-launch.sh \
+     shared-components/image/entrypoint_helpers.py  /
+COPY shared-components/support                      /opt/atlassian/support
+COPY config/*                                       /opt/atlassian/etc/
+COPY bamboo-update-capability.sh                    /
+
+# Install common dependencies
+USER root
+RUN dnf upgrade -y \
+    && dnf install -y \
+        git \
+        git-lfs \
+        openssh \
+        python3 \
+        python3-jinja2 \
+        gzip \
+        procps-ng \
+        util-linux \
+        which \
+        curl \
+        wget \
+        tar \
+        unzip \
+        ca-certificates \
+        gnupg \
+    && dnf clean all \
+    && mkdir -p ${APP_DIR}/java/8 ${APP_DIR}/java/17 ${APP_DIR}/java/21 \
+       ${APP_DIR}/node/18 ${APP_DIR}/node/20 \
+       ${APP_DIR}/maven \
+       ${APP_DIR}/dotnet/8
+
+# Install Java versions using Adoptium API
+# Java 8
+RUN curl -L "https://api.adoptium.net/v3/binary/latest/8/ga/linux/x64/jdk/hotspot/normal/eclipse" \
+    -o /tmp/jdk8.tar.gz \
+    && tar -xzf /tmp/jdk8.tar.gz -C ${APP_DIR}/java/8 --strip-components=1 \
+    && rm /tmp/jdk8.tar.gz
+
+# Java 17
+RUN curl -L "https://api.adoptium.net/v3/binary/latest/17/ga/linux/x64/jdk/hotspot/normal/eclipse" \
+    -o /tmp/jdk17.tar.gz \
+    && tar -xzf /tmp/jdk17.tar.gz -C ${APP_DIR}/java/17 --strip-components=1 \
+    && rm /tmp/jdk17.tar.gz
+
+# Java 21
+RUN curl -L "https://api.adoptium.net/v3/binary/latest/21/ga/linux/x64/jdk/hotspot/normal/eclipse" \
+    -o /tmp/jdk21.tar.gz \
+    && tar -xzf /tmp/jdk21.tar.gz -C ${APP_DIR}/java/21 --strip-components=1 \
+    && rm /tmp/jdk21.tar.gz
+
+# Install Maven
+ENV MAVEN_VERSION=3.9.9
+RUN curl -L --silent https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz \
+    | tar -xz --strip-components=1 -C "${APP_DIR}/maven" \
+    && ln -s ${APP_DIR}/maven/bin/mvn /usr/local/bin/mvn
+
+# Install Node.js 18 LTS
+RUN curl -fsSL https://nodejs.org/dist/v18.19.1/node-v18.19.1-linux-x64.tar.gz \
+    | tar -xz --strip-components=1 -C "${APP_DIR}/node/18" \
+    && ln -s ${APP_DIR}/node/18/bin/node /usr/local/bin/node18 \
+    && ln -s ${APP_DIR}/node/18/bin/npm /usr/local/bin/npm18
+
+# Install Node.js 20 LTS
+RUN curl -fsSL https://nodejs.org/dist/v20.11.1/node-v20.11.1-linux-x64.tar.gz \
+    | tar -xz --strip-components=1 -C "${APP_DIR}/node/20" \
+    && ln -s ${APP_DIR}/node/20/bin/node /usr/local/bin/node20 \
+    && ln -s ${APP_DIR}/node/20/bin/npm /usr/local/bin/npm20 \
+    && ln -s ${APP_DIR}/node/20/bin/node /usr/local/bin/node \
+    && ln -s ${APP_DIR}/node/20/bin/npm /usr/local/bin/npm
+
+# Install .NET SDK 8.0
+RUN curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --install-dir ${APP_DIR}/dotnet/8 --channel 8.0 --no-path \
+    && ln -s ${APP_DIR}/dotnet/8/dotnet /usr/local/bin/dotnet
+
+# Install Octopus CLI
+RUN curl -sSL "https://github.com/OctopusDeploy/cli/releases/download/v2.0.0/octopus-cli_2.0.0_linux_amd64.tar.gz" \
+    -o /tmp/octopus-cli.tar.gz \
+    && mkdir -p /tmp/octopus \
+    && tar -xzf /tmp/octopus-cli.tar.gz -C /tmp/octopus \
+    && mv /tmp/octopus/octopus /usr/local/bin/ \
+    && chmod +x /usr/local/bin/octopus \
+    && rm -rf /tmp/octopus /tmp/octopus-cli.tar.gz
+
+ARG BAMBOO_VERSION
+ENV BAMBOO_VERSION                          ${BAMBOO_VERSION}
+ARG DOWNLOAD_URL=https://packages.atlassian.com/mvn/maven-atlassian-external/com/atlassian/bamboo/atlassian-bamboo-agent-installer/${BAMBOO_VERSION}/atlassian-bamboo-agent-installer-${BAMBOO_VERSION}.jar
+
+# Setup user and download Bamboo agent
+RUN groupadd --gid ${RUN_GID} ${RUN_GROUP} \
+    && useradd --uid ${RUN_UID} --gid ${RUN_GID} --home-dir ${BAMBOO_AGENT_HOME} --shell /bin/bash ${RUN_USER} \
+    && echo PATH=$PATH > /etc/environment \
+    \
+    && mkdir -p                             ${BAMBOO_AGENT_INSTALL_DIR} \
+    && chown -R ${RUN_USER}:root            ${BAMBOO_AGENT_INSTALL_DIR} \
+    && curl -L --silent                     ${DOWNLOAD_URL} -o "${BAMBOO_AGENT_INSTALL_DIR}/atlassian-bamboo-agent-installer.jar" \
+    && jar -tf                              "${BAMBOO_AGENT_INSTALL_DIR}/atlassian-bamboo-agent-installer.jar" \
+    && mkdir -p                             ${BAMBOO_AGENT_HOME}/conf ${BAMBOO_AGENT_HOME}/bin
+
+# Register all capabilities
+RUN /bamboo-update-capability.sh "JDK" ${APP_DIR}/java/21/bin/java \
+    && /bamboo-update-capability.sh "system.jdk.JDK 8" ${APP_DIR}/java/8/bin/java \
+    && /bamboo-update-capability.sh "system.jdk.JDK 17" ${APP_DIR}/java/17/bin/java \
+    && /bamboo-update-capability.sh "system.jdk.JDK 21" ${APP_DIR}/java/21/bin/java \
+    && /bamboo-update-capability.sh "Maven" ${APP_DIR}/maven/bin/mvn \
+    && /bamboo-update-capability.sh "Maven 3" ${APP_DIR}/maven/bin/mvn \
+    && /bamboo-update-capability.sh "Maven 3.9" ${APP_DIR}/maven/bin/mvn \
+    && /bamboo-update-capability.sh "Node.js" ${APP_DIR}/node/20/bin/node \
+    && /bamboo-update-capability.sh "Node.js 18" ${APP_DIR}/node/18/bin/node \
+    && /bamboo-update-capability.sh "Node.js 20" ${APP_DIR}/node/20/bin/node \
+    && /bamboo-update-capability.sh "npm" ${APP_DIR}/node/20/bin/npm \
+    && /bamboo-update-capability.sh "npm 18" ${APP_DIR}/node/18/bin/npm \
+    && /bamboo-update-capability.sh "npm 20" ${APP_DIR}/node/20/bin/npm \
+    && /bamboo-update-capability.sh ".NET" ${APP_DIR}/dotnet/8/dotnet \
+    && /bamboo-update-capability.sh ".NET 8" ${APP_DIR}/dotnet/8/dotnet \
+    && /bamboo-update-capability.sh "Python" /usr/bin/python3 \
+    && /bamboo-update-capability.sh "Python 3" /usr/bin/python3 \
+    && /bamboo-update-capability.sh "Git" /usr/bin/git \
+    && /bamboo-update-capability.sh "octopusCLI" /usr/local/bin/octopus \
+    && chown -R ${RUN_USER}:root ${BAMBOO_AGENT_HOME} \
+    && chmod -R 770 ${BAMBOO_AGENT_HOME} \
+    && for file in "/opt/atlassian/support /entrypoint.py /entrypoint_helpers.py /probe-common.sh /probe-startup.sh /probe-readiness.sh /pre-launch.sh /bamboo-update-capability.sh"; do \
+       chmod -R "u=rwX,g=rX,o=rX" ${file} && \
+       chown -R root ${file}; done
+
+# Set environment variables for all tool versions
+ENV JAVA_HOME_8=${APP_DIR}/java/8
+ENV JAVA_HOME_17=${APP_DIR}/java/17
+ENV JAVA_HOME_21=${APP_DIR}/java/21
+ENV MAVEN_HOME=${APP_DIR}/maven
+ENV NODE_HOME_18=${APP_DIR}/node/18
+ENV NODE_HOME_20=${APP_DIR}/node/20
+ENV DOTNET_HOME=${APP_DIR}/dotnet/8
+
+# Set default versions
+ENV JAVA_HOME=${JAVA_HOME_21}
+ENV NODE_HOME=${NODE_HOME_20}
+
+# Add all tool directories to PATH
+ENV PATH="${JAVA_HOME}/bin:${MAVEN_HOME}/bin:${NODE_HOME}/bin:${DOTNET_HOME}:${PATH}"
+
+# Create helper scripts to switch between versions
+RUN echo '#!/bin/bash\nexport JAVA_HOME=${JAVA_HOME_8}\nexport PATH=${JAVA_HOME}/bin:${PATH}' > /usr/local/bin/use-java8 && \
+    echo '#!/bin/bash\nexport JAVA_HOME=${JAVA_HOME_17}\nexport PATH=${JAVA_HOME}/bin:${PATH}' > /usr/local/bin/use-java17 && \
+    echo '#!/bin/bash\nexport JAVA_HOME=${JAVA_HOME_21}\nexport PATH=${JAVA_HOME}/bin:${PATH}' > /usr/local/bin/use-java21 && \
+    echo '#!/bin/bash\nexport NODE_HOME=${NODE_HOME_18}\nexport PATH=${NODE_HOME}/bin:${PATH}' > /usr/local/bin/use-node18 && \
+    echo '#!/bin/bash\nexport NODE_HOME=${NODE_HOME_20}\nexport PATH=${NODE_HOME}/bin:${PATH}' > /usr/local/bin/use-node20 && \
+    chmod +x /usr/local/bin/use-java8 /usr/local/bin/use-java17 /usr/local/bin/use-java21 /usr/local/bin/use-node18 /usr/local/bin/use-node20
+
+CMD ["/entrypoint.py"]
+ENTRYPOINT ["/pre-launch.sh"]
