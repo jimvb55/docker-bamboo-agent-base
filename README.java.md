@@ -8,12 +8,12 @@ The Java Bamboo Agent is designed to provide a flexible Java build environment w
 
 ## 🛠️ Included Tools & Versions
 
-| Category | Tool | Default Versions | Installation Path |
-|----------|------|-----------------|------------------|
-| ☕ Java | OpenJDK (Adoptium) | 17, 21 | `/app/java/17`, `/app/java/21` |
-| 🔧 Build Tools | Maven | 3.9.9 | `/app/maven` |
-| 📦 Version Control | Git & Git LFS | Latest | System installed |
-| 🐍 Scripting | Python | 3.x | System installed |
+| Category | Tool | Version | Installation Path | Notes |
+|----------|------|---------|------------------|--------|
+| ☕ Java | OpenJDK (Adoptium) | 17, 21 (default) | `/app/java/17`, `/app/java/21` | Versions configurable via build arg |
+| 🔧 Build Tools | Maven | 3.9.9 | `/app/maven` | Fixed version |
+| 📦 Version Control | Git & Git LFS | Latest | System installed | - |
+| 🐍 Scripting | Python | 3.x | System installed | - |
 
 ## 🏗️ Directory Structure
 
@@ -89,14 +89,6 @@ docker build -f Dockerfile.java \
   -t bamboo-agent-java .
 ```
 
-3. **Maven Version**:
-```bash
-# Use a specific Maven version
-docker build -f Dockerfile.java \
-  --build-arg MAVEN_VERSIONS="3.8.8" \
-  --build-arg BAMBOO_VERSION=10.2.1 \
-  -t bamboo-agent-java .
-```
 
 ## 🏃‍♂️ Running the Agent
 

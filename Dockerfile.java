@@ -59,7 +59,7 @@ RUN microdnf upgrade -y \
 
 # Arguments for tool versions
 ARG JAVA_VERSIONS="17 21"
-ARG MAVEN_VERSIONS="3.9.9"
+ENV MAVEN_VERSION="3.9.9"
 
 # Create Java directories based on versions argument
 RUN for version in ${JAVA_VERSIONS}; do \
@@ -74,12 +74,10 @@ RUN for version in ${JAVA_VERSIONS}; do \
         && rm /tmp/jdk${version}.tar.gz; \
     done
 
-# Install Maven versions
-RUN for version in ${MAVEN_VERSIONS}; do \
-        curl -L --silent https://archive.apache.org/dist/maven/maven-3/${version}/binaries/apache-maven-${version}-bin.tar.gz \
-        | tar -xz --strip-components=1 -C "${APP_DIR}/maven" \
-        && ln -s ${APP_DIR}/maven/bin/mvn /usr/local/bin/mvn; \
-    done
+# Install Maven
+RUN curl -L --silent https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz \
+    | tar -xz --strip-components=1 -C "${APP_DIR}/maven" \
+    && ln -s ${APP_DIR}/maven/bin/mvn /usr/local/bin/mvn
 
 ARG BAMBOO_VERSION
 ENV BAMBOO_VERSION                          ${BAMBOO_VERSION}
