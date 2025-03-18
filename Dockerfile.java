@@ -55,12 +55,16 @@ RUN microdnf upgrade -y \
         ca-certificates \
         gnupg \
     && microdnf clean all \
-    && mkdir -p ${APP_DIR}/java/17 ${APP_DIR}/java/21 \
-       ${APP_DIR}/maven
+    && mkdir -p ${APP_DIR}/maven
 
 # Arguments for tool versions
 ARG JAVA_VERSIONS="17 21"
 ARG MAVEN_VERSIONS="3.9.9"
+
+# Create Java directories based on versions argument
+RUN for version in ${JAVA_VERSIONS}; do \
+        mkdir -p ${APP_DIR}/java/${version}; \
+    done
 
 # Install Java versions using Adoptium API
 RUN for version in ${JAVA_VERSIONS}; do \
